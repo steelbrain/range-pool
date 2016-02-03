@@ -41,7 +41,7 @@ export class PoolWorker {
   getRemaining(): number {
     return this.limitIndex - this.currentIndex
   }
-  isComplete(): boolean {
+  hasCompleted(): boolean {
     return this.getRemaining() === 0
   }
   onDidDestroy(callback: Function): Disposable {
