@@ -33,12 +33,12 @@ describe('RangePool', function() {
       pool.createWorker()
     }).toThrow()
   })
-  it('has a working isComplete method', function() {
+  it('has a working hasCompleted method', function() {
     const pool = new RangePool(500)
     const worker = pool.createWorker()
-    expect(pool.isComplete()).toBe(false)
+    expect(pool.hasCompleted()).toBe(false)
     worker.advance(500)
-    expect(pool.isComplete()).toBe(true)
+    expect(pool.hasCompleted()).toBe(true)
   })
   it('has a working getCompletedSteps method', function() {
     const pool = new RangePool(500)
