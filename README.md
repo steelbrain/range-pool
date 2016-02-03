@@ -5,13 +5,13 @@ For example, if you want to write a multi-connection download library that write
 
 ## Installation
 
-```
+```js
 npm install --save range-pool
 ```
 
 ## API
 
-```
+```js
 export class RangePool {
   constructor(length: number | Infinity)
   createWorker(): PoolWorker
@@ -34,7 +34,7 @@ class PoolWorker {
 
 ## Example Usage
 
-```
+```js
 'use babel'
 
 import {RangePool} from 'range-pool'
