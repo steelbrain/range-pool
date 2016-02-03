@@ -16,6 +16,9 @@ export class PoolWorker {
   constructor(startIndex: number, limitIndex: number) {
     invariant(typeof startIndex === 'number', 'startIndex is not a number')
     invariant(typeof limitIndex === 'number', 'limitIndex is not a number')
+    invariant(startIndex > -1, 'startIndex should be at least zero')
+    invariant(limitIndex > 0, 'limitIndex should be greater than zero')
+    invariant(limitIndex - startIndex > 0, 'startIndex and limitIndex difference should be more than zero')
 
     this.subscriptions = new CompositeDisposable()
     this.emitter = new Emitter()
