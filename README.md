@@ -18,7 +18,7 @@ export class RangePool {
   hasCompleted(): boolean
   hasWorkingWorker(): boolean
   getCompletedSteps(): boolean
-  getRemaining(): boolean // out of length
+  getRemaining(): number // out of length
   dispose()
 }
 class PoolWorker {
