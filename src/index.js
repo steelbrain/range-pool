@@ -13,6 +13,7 @@ export class RangePool {
   constructor(length: number) {
     invariant(typeof length === 'number', 'length is not a number')
     invariant(length !== Infinity, 'length can not be infinite')
+    invariant(length > 0, 'length must be greater than zero')
 
     this.complete = false
     this.workers = new Set()
@@ -45,11 +46,7 @@ export class RangePool {
     return newWorker
   }
   isComplete(): boolean {
-    return this.length === this.getCompletedSteps()
-  }
-  registerWorker(worker: PoolWorker): PoolWorker {
-    this.workers.add(worker)
-    return worker
+    return this.getCompletedSteps() === this.length
   }
   getCompletedSteps(): number {
     let completedSteps = 0
@@ -57,6 +54,14 @@ export class RangePool {
       completedSteps += worker.currentIndex - worker.startIndex
     }
     return completedSteps
+  }
+  getRemaining(): number {
+    return this.length - this.getCompletedSteps()
+  }
+  // Private function registerWorker
+  registerWorker(worker: PoolWorker): PoolWorker {
+    this.workers.add(worker)
+    return worker
   }
   dispose() {
     this.workers.clear()

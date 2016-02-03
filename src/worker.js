@@ -33,7 +33,7 @@ export class PoolWorker {
     this.currentIndex += steps
   }
   getCompletionPercentage(): number {
-    return ((this.currentIndex - this.startIndex) / (this.limitIndex - this.startIndex)) * 100
+    return Math.round(((this.currentIndex - this.startIndex) / (this.limitIndex - this.startIndex)) * 100)
   }
   getRemaining(): number {
     return this.limitIndex - this.currentIndex
