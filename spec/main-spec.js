@@ -1,6 +1,7 @@
 'use babel'
 
 import {RangePool} from '../'
+console = require('console')
 
 describe('RangePool', function() {
   it('cries when constructor param is inifinite', function() {
@@ -82,13 +83,21 @@ describe('RangePool', function() {
     workerSecond.advance(100)
     const workerThird = pool.createWorker()
     expect(pool.getCompletedSteps()).toBe(228)
-    expect(workerFirst.limitIndex).toBe(576)
-    expect(workerFirst.currentIndex).toBe(128)
-    expect(workerSecond.startIndex).toBe(576)
-    expect(workerSecond.currentIndex).toBe(676)
-    expect(workerSecond.limitIndex).toBe(850)
-    expect(workerThird.startIndex).toBe(850)
-    expect(workerThird.currentIndex).toBe(850)
-    expect(workerThird.limitIndex).toBe(1024)
+
+    let range = 0
+    range += workerFirst.getIndexLimit() - workerFirst.getStartIndex()
+    range += workerSecond.getIndexLimit() - workerSecond.getStartIndex()
+    range += workerThird.getIndexLimit() - workerThird.getStartIndex()
+    expect(range).toBe(1024)
+  })
+
+  it('properly distributes work of odd length', function() {
+    const pool = new RangePool(999)
+    const workerFirst = pool.createWorker()
+    workerFirst.advance(50)
+    const workerSecond = pool.createWorker()
+    expect(workerFirst.limitIndex).toBe(525)
+    expect(workerSecond.startIndex).toBe(525)
+    expect(workerSecond.limitIndex).toBe(999)
   })
 })
