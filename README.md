@@ -26,6 +26,7 @@ class PoolWorker {
   getCompletionPercentage(): number
   getRemaining(): number
   getCurrentIndex(): number
+  getStartIndex(): number
   getIndexLimit(): number
   hasCompleted(): boolean
   dispose()
