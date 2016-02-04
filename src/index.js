@@ -21,13 +21,24 @@ export class RangePool {
   }
   createWorker(): PoolWorker {
     let lazyWorker = null
+    let lazyDiff = 0
     let lazyPercentage = 101
+    let lastWorker = null
 
     for (const worker of this.workers) {
-      const percentage = worker.getCompletionPercentage()
-      if (!worker.hasCompleted() && (percentage <= lazyPercentage)) {
-        lazyWorker = worker
-        lazyPercentage = percentage
+      if (!worker.hasCompleted()) {
+        const percentage = worker.getCompletionPercentage()
+        const diff = worker.getIndexLimit() - worker.getCurrentIndex()
+        lastWorker = worker
+        if (percentage < lazyPercentage) {
+          lazyWorker = worker
+          lazyPercentage = percentage
+          lazyDiff = diff
+        } else if (lazyDiff < diff) {
+          lazyWorker = worker
+          lazyPercentage = percentage
+          lazyDiff = diff
+        }
       }
     }
 
@@ -39,7 +50,7 @@ export class RangePool {
     }
 
     const workLeft = lazyWorker.getRemaining()
-    const indexForNewWorker = (lazyWorker.currentIndex + workLeft / 2)
+    const indexForNewWorker = Math.ceil(lazyWorker.currentIndex + workLeft / 2)
     const newWorker = new PoolWorker(indexForNewWorker, lazyWorker.limitIndex)
     lazyWorker.limitIndex = indexForNewWorker
     this.registerWorker(newWorker)

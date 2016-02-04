@@ -37,6 +37,9 @@ export class PoolWorker {
   getCurrentIndex(): number {
     return this.currentIndex
   }
+  getStartIndex(): number {
+    return this.startIndex
+  }
   getIndexLimit(): number {
     return this.limitIndex
   }
