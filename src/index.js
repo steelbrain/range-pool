@@ -57,8 +57,7 @@ export class RangePool {
     const indexForNewWorker = Math.ceil(lazyWorker.currentIndex + workLeft / 2)
     const newWorker = new PoolWorker(indexForNewWorker, lazyWorker.limitIndex)
     lazyWorker.limitIndex = indexForNewWorker
-    this.registerWorker(newWorker)
-    return newWorker
+    return this.registerWorker(newWorker).activate()
   }
   hasCompleted(): boolean {
     return this.getCompletedSteps() === this.length
