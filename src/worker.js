@@ -23,7 +23,7 @@ export class PoolWorker {
     this.currentIndex = this.startIndex
     this.limitIndex = limitIndex
   }
-  activate(): this {
+  activate(): PoolWorker {
     this.active = true
     return this
   }
