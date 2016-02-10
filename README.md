@@ -23,6 +23,7 @@ export class RangePool {
 }
 class PoolWorker {
   advance(steps: number)
+  isActive(): boolean
   getCompletionPercentage(): number
   getRemaining(): number
   getCurrentIndex(): number

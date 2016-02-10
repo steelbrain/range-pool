@@ -5,6 +5,7 @@
 import invariant from 'assert'
 
 export class PoolWorker {
+  active: boolean;
   startIndex: number;
   currentIndex: number;
   limitIndex: number;
@@ -17,9 +18,14 @@ export class PoolWorker {
     invariant(limitIndex > 0, 'limitIndex should be greater than zero')
     invariant(limitIndex - startIndex > 0, 'startIndex and limitIndex difference should be more than zero')
 
+    this.active = false
     this.startIndex = startIndex
     this.currentIndex = this.startIndex
     this.limitIndex = limitIndex
+  }
+  activate(): PoolWorker {
+    this.active = true
+    return this
   }
   advance(steps: number) {
     const remaining = this.getRemaining()
@@ -46,7 +52,10 @@ export class PoolWorker {
   hasCompleted(): boolean {
     return this.getRemaining() === 0
   }
+  isActive(): boolean {
+    return this.active
+  }
   dispose() {
-    this.limitIndex = this.currentIndex
+    this.active = false
   }
 }
