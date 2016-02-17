@@ -127,4 +127,17 @@ describe('RangePool', function() {
     expect(workerD.isActive()).toBe(true)
     expect(workerC.isActive()).toBe(true)
   })
+
+  it('is serializable', function() {
+    const pool = new RangePool(50)
+    const workerA = pool.createWorker()
+    workerA.advance(5)
+    const workerB = pool.createWorker()
+    workerB.advance(5)
+
+    const poolClone = RangePool.unserialize(pool.serialize())
+    expect(pool.length).toEqual(poolClone.length)
+    expect(pool.complete).toEqual(poolClone.complete)
+    expect([...pool.workers]).toEqual([...poolClone.workers])
+  })
 })

@@ -4,6 +4,13 @@
 
 import invariant from 'assert'
 import {PoolWorker} from './worker'
+import type {PoolWorker$Serialized} from './worker'
+
+type RangePool$Serialized = {
+  length: number,
+  complete: boolean,
+  workers: Array<PoolWorker$Serialized>
+}
 
 export class RangePool {
   length: number;
@@ -15,9 +22,20 @@ export class RangePool {
     invariant(length !== Infinity, 'length can not be infinite')
     invariant(length > 0, 'length must be greater than zero')
 
+    this.length = length
     this.complete = false
     this.workers = new Set()
-    this.length = length
+  }
+  serialize(): RangePool$Serialized {
+    const workers = []
+    for (const worker of this.workers) {
+      workers.push(worker.serialize())
+    }
+    return {
+      length: this.length,
+      complete: this.complete,
+      workers: workers
+    }
   }
   createWorker(): PoolWorker {
     let lazyWorker = null
@@ -87,5 +105,13 @@ export class RangePool {
   }
   dispose() {
     this.workers.clear()
+  }
+  static unserialize(serialized: RangePool$Serialized): RangePool {
+    const pool = new RangePool(serialized.length)
+    pool.complete = serialized.complete
+    for (const worker of serialized.workers) {
+      pool.workers.add(PoolWorker.unserialize(worker))
+    }
+    return pool
   }
 }

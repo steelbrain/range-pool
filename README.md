@@ -14,12 +14,14 @@ npm install --save range-pool
 ```js
 export class RangePool {
   constructor(length: number | Infinity)
+  serialize(): Object
   createWorker(): PoolWorker
   hasCompleted(): boolean
   hasWorkingWorker(): boolean
   getCompletedSteps(): boolean
   getRemaining(): number // out of length
   dispose()
+  static unserialize(info: Object): RangePool
 }
 class PoolWorker {
   advance(steps: number)

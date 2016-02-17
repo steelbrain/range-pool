@@ -86,4 +86,11 @@ describe('Pool Worker', function() {
     worker.dispose()
     expect(worker.isActive()).toBe(false)
   })
+
+  it('is serializable', function() {
+    const worker = new PoolWorker(50, 100)
+    worker.advance(10)
+    const cloneWorker = PoolWorker.unserialize(worker.serialize())
+    expect(worker).toEqual(cloneWorker)
+  })
 })
