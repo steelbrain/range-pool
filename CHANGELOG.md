@@ -1,3 +1,7 @@
+#### 1.0.3
+
+- Add serialize/unserialize to pool
+
 #### 1.0.2
 
 - Workers who die with unfished work are now re-used so the pool no longer gets worker holes
