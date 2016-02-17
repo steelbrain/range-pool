@@ -7,8 +7,8 @@ import invariant from 'assert'
 export class PoolWorker {
   active: boolean;
   startIndex: number;
-  currentIndex: number;
   limitIndex: number;
+  currentIndex: number;
 
   constructor(startIndex: number, limitIndex: number) {
     invariant(typeof startIndex === 'number', 'startIndex is not a number')
@@ -20,8 +20,16 @@ export class PoolWorker {
 
     this.active = false
     this.startIndex = startIndex
-    this.currentIndex = this.startIndex
     this.limitIndex = limitIndex
+    this.currentIndex = this.startIndex
+  }
+  serialize(): string {
+    return JSON.stringify({
+      active: this.active,
+      startIndex: this.startIndex,
+      limitIndex: this.limitIndex,
+      currentIndex: this.currentIndex,
+    })
   }
   activate(): PoolWorker {
     this.active = true
