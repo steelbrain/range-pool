@@ -15,9 +15,20 @@ export class RangePool {
     invariant(length !== Infinity, 'length can not be infinite')
     invariant(length > 0, 'length must be greater than zero')
 
+    this.length = length
     this.complete = false
     this.workers = new Set()
-    this.length = length
+  }
+  serialize(): string {
+    const workers = []
+    for (const worker of this.workers) {
+      workers.push(worker.serialize())
+    }
+    return JSON.stringify({
+      length: this.length,
+      complete: this.complete,
+      workers: workers
+    })
   }
   createWorker(): PoolWorker {
     let lazyWorker = null
