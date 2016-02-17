@@ -4,6 +4,13 @@
 
 import invariant from 'assert'
 
+export type PoolWorker$Serialized = {
+  active: boolean,
+  startIndex: number,
+  limitIndex: number,
+  currentIndex: number
+}
+
 export class PoolWorker {
   active: boolean;
   startIndex: number;
@@ -23,13 +30,13 @@ export class PoolWorker {
     this.limitIndex = limitIndex
     this.currentIndex = this.startIndex
   }
-  serialize(): string {
-    return JSON.stringify({
+  serialize(): PoolWorker$Serialized {
+    return {
       active: this.active,
       startIndex: this.startIndex,
       limitIndex: this.limitIndex,
       currentIndex: this.currentIndex,
-    })
+    }
   }
   activate(): PoolWorker {
     this.active = true
@@ -65,5 +72,11 @@ export class PoolWorker {
   }
   dispose() {
     this.active = false
+  }
+  static unserialize(serialized: PoolWorker$Serialized): PoolWorker {
+    const worker = new PoolWorker(serialized.startIndex, serialized.limitIndex)
+    worker.active = serialized.active
+    worker.currentIndex = serialized.currentIndex
+    return worker
   }
 }
