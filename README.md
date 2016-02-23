@@ -17,6 +17,7 @@ export class RangePool {
   serialize(): Object
   createWorker(): PoolWorker
   hasCompleted(): boolean
+  getWorkingWorker(): ?PoolWorker
   hasWorkingWorker(): boolean
   getCompletedSteps(): boolean
   getRemaining(): number // out of length
