@@ -1,3 +1,7 @@
+#### 1.1.1
+
+- Add `getWorkingWorker` to RangePool
+
 #### 1.1.0
 
 - Add serialize/unserialize to pool
