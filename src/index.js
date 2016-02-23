@@ -80,13 +80,16 @@ export class RangePool {
   hasCompleted(): boolean {
     return this.getCompletedSteps() === this.length
   }
-  hasWorkingWorker(): boolean {
+  getWorkingWorker(): ?PoolWorker {
     for (const worker of this.workers) {
       if (!worker.hasCompleted() && worker.isActive()) {
-        return true
+        return worker
       }
     }
-    return false
+    return null
+  }
+  hasWorkingWorker(): boolean {
+    return this.getWorkingWorker() !== null
   }
   getCompletedSteps(): number {
     let completedSteps = 0
