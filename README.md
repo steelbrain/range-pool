@@ -15,16 +15,16 @@ npm install --save range-pool
 export class RangePool {
   constructor(length: number | Infinity)
   serialize(): Object
-  getWorker(): PoolWorker
+  getWorker(): RangeWorker
   hasCompleted(): boolean
-  getWorkingWorker(): ?PoolWorker
+  getWorkingWorker(): ?RangeWorker
   hasWorkingWorker(): boolean
   getCompleted(): boolean
   getRemaining(): number // out of length
   dispose()
   static unserialize(info: Object): RangePool
 }
-class PoolWorker {
+class RangeWorker {
   advance(steps: number)
   getActive(): boolean
   getCompletionPercentage(): number

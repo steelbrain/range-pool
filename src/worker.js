@@ -3,7 +3,7 @@
 import invariant from 'assert'
 import type { SerializedWorker } from './types'
 
-export default class PoolWorker {
+export default class RangeWorker {
   active: boolean;
   startIndex: number;
   limitIndex: number;
@@ -29,7 +29,7 @@ export default class PoolWorker {
     }
     this.currentIndex += steps
   }
-  setActive(active: boolean): PoolWorker {
+  setActive(active: boolean): RangeWorker {
     this.active = !!active
     return this
   }
@@ -68,8 +68,8 @@ export default class PoolWorker {
       currentIndex: this.currentIndex,
     }
   }
-  static unserialize(serialized: SerializedWorker): PoolWorker {
-    const worker = new PoolWorker(serialized.startIndex, serialized.limitIndex)
+  static unserialize(serialized: SerializedWorker): RangeWorker {
+    const worker = new RangeWorker(serialized.startIndex, serialized.limitIndex)
     worker.active = serialized.active
     worker.currentIndex = serialized.currentIndex
     return worker

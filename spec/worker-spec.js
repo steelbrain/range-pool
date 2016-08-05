@@ -1,10 +1,10 @@
 'use babel'
 
-import PoolWorker from '../lib/worker'
+import RangeWorker from '../lib/worker'
 
 describe('Pool Worker', function() {
-  function getWorker(param1: any, param2: any): PoolWorker {
-    return new PoolWorker(param1, param2)
+  function getWorker(param1: any, param2: any): RangeWorker {
+    return new RangeWorker(param1, param2)
   }
 
   it('cries if start index is not valid', function() {
@@ -104,7 +104,7 @@ describe('Pool Worker', function() {
   it('is serializable', function() {
     const worker = getWorker(50, 100)
     worker.advance(10)
-    const cloneWorker = PoolWorker.unserialize(worker.serialize())
+    const cloneWorker = RangeWorker.unserialize(worker.serialize())
     expect(worker).toEqual(cloneWorker)
   })
 })

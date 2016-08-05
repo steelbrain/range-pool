@@ -1,11 +1,11 @@
 /* @flow */
 
 import invariant from 'assert'
-import PoolWorker from './worker'
+import RangeWorker from './worker'
 
 export default class RangePool {
   length: number;
-  workers: Set<PoolWorker>;
+  workers: Set<RangeWorker>;
 
   constructor(length: number) {
     invariant(typeof length === 'number', 'length is not a number')
@@ -23,17 +23,17 @@ export default class RangePool {
     }
     return false
   }
-  getWorker(): ?PoolWorker {
+  getWorker(): ?RangeWorker {
     if (this.hasCompleted()) {
       throw new Error('Can not add a new worker on a completed pool')
     }
     if (!this.workers.size) {
-      const worker = new PoolWorker(0, this.length)
+      const worker = new RangeWorker(0, this.length)
       this.workers.add(worker)
       return worker.setActive(true)
     }
 
-    let lazy: ?PoolWorker = null
+    let lazy: ?RangeWorker = null
 
     for (const worker of this.workers) {
       if (worker.hasCompleted()) {
@@ -50,12 +50,13 @@ export default class RangePool {
     invariant(lazy, 'No lazy worker found?!')
     const workLeft = lazy.getRemaining()
     const indexForNewWorker = Math.ceil(lazy.currentIndex + (workLeft / 2))
-    const newWorker = new PoolWorker(indexForNewWorker, lazy.limitIndex)
+    const newWorker = new RangeWorker(indexForNewWorker, lazy.limitIndex)
     this.workers.add(newWorker)
     lazy.limitIndex = indexForNewWorker
     return newWorker.setActive(true)
   }
   getCompleted(): number {
+    // has
     let completedSteps = 0
     for (const worker of this.workers) {
       completedSteps += worker.getCompleted()
@@ -63,9 +64,11 @@ export default class RangePool {
     return completedSteps
   }
   getRemaining(): number {
+    // has
     return this.length - this.getCompleted()
   }
   hasCompleted(): boolean {
+    // has
     return this.getCompleted() === this.length
   }
   getCompletionPercentage(): number {
@@ -97,8 +100,10 @@ export default class RangePool {
     })
     const pool = new RangePool(unserialized.length)
     for (let i = 0, length = unserialized.workers.length; i < length; ++i) {
-      pool.workers.add(PoolWorker.unserialize(unserialized.workers[i]))
+      pool.workers.add(RangeWorker.unserialize(unserialized.workers[i]))
     }
     return pool
   }
 }
+
+export { RangeWorker, RangePool }
