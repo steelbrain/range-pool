@@ -45,6 +45,16 @@ describe('Pool Worker', function() {
     }).toThrow()
   })
 
+  it('has a working setActive method', function() {
+    const worker = getWorker(0, 50)
+    worker.setActive(null)
+    expect(worker.getActive()).toBe(false)
+    worker.setActive(1)
+    expect(worker.getActive()).toBe(true)
+    worker.setActive('asdasd')
+    expect(worker.getActive()).toBe(true)
+  })
+
   it('has a working getCompletionPercentage method', function() {
     const worker = getWorker(50, 100)
     expect(worker.getCompletionPercentage()).toBe(0)
