@@ -30,7 +30,10 @@ describe('Pool Worker', function() {
     expect(function() {
       getWorker(5, 5)
     }).toThrow()
-    getWorker(0, Infinity)
+    expect(function() {
+      getWorker(0, Infinity)
+    }).toThrow()
+    getWorker(0, 100)
   })
 
   it('has a working advance method', function() {
@@ -85,7 +88,7 @@ describe('Pool Worker', function() {
   })
 
   it('has an active state', function() {
-    const worker = getWorker(50, Infinity)
+    const worker = getWorker(50, 100)
     expect(worker.getActive()).toBe(false)
     worker.setActive(true)
     expect(worker.getActive()).toBe(true)
