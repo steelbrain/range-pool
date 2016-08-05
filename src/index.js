@@ -72,7 +72,7 @@ export default class RangePool {
     return this.getCompleted() === this.length
   }
   getCompletionPercentage(): number {
-    if (!Number.isFinite(this.length)) {
+    if (this.length === Infinity) {
       return 0
     }
     return Math.round((this.getCompleted() / this.getRemaining()) * 100)
