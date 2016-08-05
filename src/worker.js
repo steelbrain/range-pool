@@ -15,20 +15,12 @@ export default class PoolWorker {
     invariant(startIndex !== Infinity, 'startIndex should not be inifinite')
     invariant(startIndex > -1, 'startIndex should be at least zero')
     invariant(limitIndex > 0, 'limitIndex should be greater than zero')
-    invariant(limitIndex - startIndex > 0, 'startIndex and limitIndex difference should be more than zero')
+    invariant((limitIndex - startIndex) > 0, 'startIndex and limitIndex difference should be more than zero')
 
     this.active = false
     this.startIndex = startIndex
     this.limitIndex = limitIndex
     this.currentIndex = this.startIndex
-  }
-  serialize(): PoolWorker$Serialized {
-    return {
-      active: this.active,
-      startIndex: this.startIndex,
-      limitIndex: this.limitIndex,
-      currentIndex: this.currentIndex,
-    }
   }
   activate(): PoolWorker {
     this.active = true
@@ -64,6 +56,14 @@ export default class PoolWorker {
   }
   dispose() {
     this.active = false
+  }
+  serialize(): PoolWorker$Serialized {
+    return {
+      active: this.active,
+      startIndex: this.startIndex,
+      limitIndex: this.limitIndex,
+      currentIndex: this.currentIndex,
+    }
   }
   static unserialize(serialized: PoolWorker$Serialized): PoolWorker {
     const worker = new PoolWorker(serialized.startIndex, serialized.limitIndex)
