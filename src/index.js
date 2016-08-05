@@ -9,7 +9,6 @@ export default class RangePool {
 
   constructor(length: number) {
     invariant(typeof length === 'number', 'length is not a number')
-    invariant(Number.isFinite(length), 'length can not be infinite')
     invariant(length > 0, 'length must be greater than zero')
 
     this.length = length
@@ -48,6 +47,10 @@ export default class RangePool {
     }
 
     invariant(lazy, 'No lazy worker found?!')
+    if (lazy.limitIndex === Infinity) {
+      throw new Error('Refusing to create more than one worker for Infinite length')
+    }
+
     const workLeft = lazy.getRemaining()
     const indexForNewWorker = Math.ceil(lazy.currentIndex + (workLeft / 2))
     const newWorker = new RangeWorker(indexForNewWorker, lazy.limitIndex)
@@ -69,7 +72,7 @@ export default class RangePool {
     return this.getCompleted() === this.length
   }
   getCompletionPercentage(): number {
-    if (!Number.isFinite(this.length)) {
+    if (this.length === Infinity) {
       return 0
     }
     return Math.round((this.getCompleted() / this.getRemaining()) * 100)
@@ -85,12 +88,16 @@ export default class RangePool {
     return JSON.stringify({
       length: this.length,
       workers,
+    }, function(key: string, value: any) {
+      return value === Infinity ? 'Infinity' : value
     })
   }
   static unserialize(serialized: string): RangePool {
     invariant(typeof serialized === 'string', 'Serialized content must be a string')
 
-    const unserialized = JSON.parse(serialized)
+    const unserialized = JSON.parse(serialized, function(key: string, value: any) {
+      return value === 'Infinity' ? Infinity : value
+    })
     const pool = new RangePool(unserialized.length)
     for (let i = 0, length = unserialized.workers.length; i < length; ++i) {
       pool.workers.add(RangeWorker.unserialize(unserialized.workers[i]))

@@ -13,7 +13,6 @@ export default class RangeWorker {
     invariant(typeof startIndex === 'number', 'startIndex must be a number')
     invariant(typeof limitIndex === 'number', 'limitIndex must be a number')
     invariant(Number.isFinite(startIndex), 'startIndex must be finite')
-    invariant(Number.isFinite(limitIndex), 'limitIndex must be finite')
     invariant(startIndex > -1, 'startIndex must be at least zero')
     invariant(limitIndex > startIndex, 'limitIndex must be greater than startIndex')
 
@@ -58,6 +57,10 @@ export default class RangeWorker {
     return this.getRemaining() === 0
   }
   getCompletionPercentage(): number {
+    if (this.limitIndex === Infinity) {
+      return 0
+    }
+
     return Math.round((this.getCompleted() / (this.limitIndex - this.startIndex)) * 100)
   }
   dispose() {

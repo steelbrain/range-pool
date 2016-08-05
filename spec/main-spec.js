@@ -7,11 +7,6 @@ describe('RangePool', function() {
     return new RangePool(limit)
   }
 
-  it('cries when constructor param is inifinite', function() {
-    expect(function() {
-      getRangePool(Infinity)
-    }).toThrow()
-  })
   it('cries when constructor param is negative', function() {
     expect(function() {
       getRangePool(-1)
@@ -130,6 +125,23 @@ describe('RangePool', function() {
     expect(workerC.getActive()).toBe(true)
   })
 
+  it('throws an error if limit is infinity and we try to make more than one workers', function() {
+    const pool = getRangePool(Infinity)
+    let firstWorker
+    let secondWorker
+    expect(function() {
+      firstWorker = pool.getWorker()
+    }).not.toThrow()
+    expect(function() {
+      secondWorker = pool.getWorker()
+    }).toThrow()
+    firstWorker.dispose()
+    expect(function() {
+      secondWorker = pool.getWorker()
+    }).not.toThrow()
+    expect(firstWorker).toBe(secondWorker)
+  })
+
   it('is serializable', function() {
     const pool = getRangePool(50)
     const workerA = pool.getWorker()
@@ -141,5 +153,15 @@ describe('RangePool', function() {
     expect(pool.length).toEqual(poolClone.length)
     expect(pool.hasCompleted()).toEqual(poolClone.hasCompleted())
     expect([...pool.workers]).toEqual([...poolClone.workers])
+  })
+
+  it('serializes infinities', function() {
+    const pool = getRangePool(Infinity)
+    pool.getWorker()
+    const anotherPool = RangePool.unserialize(pool.serialize())
+    expect(anotherPool.workers.size).toBe(1)
+    anotherPool.workers.forEach(function(item) {
+      expect(item.limitIndex).toBe(Infinity)
+    })
   })
 })
