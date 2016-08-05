@@ -1,16 +1,20 @@
-machine:
-  node:
-    version: 5.1.0
-
 dependencies:
   override:
-    - npm install -g ucompiler
     - curl -L https://atom.io/download/deb -o atom-amd64.deb
     - sudo dpkg --install atom-amd64.deb || true
     - sudo apt-get update
     - sudo apt-get -f install
-    - apm install
+    - node --version
+    - npm --version
+    - atom --version
+    - rm -rf node_modules; npm install
+    - npm run compile
+
 test:
   override:
-    - ucompiler go
-    - apm test
+    - npm run lint
+    - npm test
+
+machine:
+  node:
+    version: 6.3.0

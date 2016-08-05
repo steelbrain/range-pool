@@ -1,39 +1,52 @@
 'use babel'
 
-import {PoolWorker} from '../lib/worker'
+import RangeWorker from '../lib/worker'
 
 describe('Pool Worker', function() {
+  function getWorker(param1: any, param2: any): RangeWorker {
+    return new RangeWorker(param1, param2)
+  }
+
   it('cries if start index is not valid', function() {
     expect(function() {
-      new PoolWorker(null)
+      getWorker(null)
     }).toThrow()
     expect(function() {
-      new PoolWorker(Infinity)
+      getWorker(Infinity)
     }).toThrow()
     expect(function() {
-      new PoolWorker(-1)
+      getWorker(-1)
     }).toThrow()
-    new PoolWorker(0, 1)
+    getWorker(0, 1)
   })
 
   it('cries if limitIndex is invalid', function() {
     expect(function() {
-      new PoolWorker(0, null)
+      getWorker(0, null)
     }).toThrow()
     expect(function() {
-      new PoolWorker(0, 0)
+      getWorker(0, 0)
     }).toThrow()
     expect(function() {
-      new PoolWorker(5, 5)
+      getWorker(5, 5)
     }).toThrow()
-    new PoolWorker(0, Infinity)
+    expect(function() {
+      getWorker(0, Infinity)
+    }).toThrow()
+    getWorker(0, 100)
   })
 
   it('has a working advance method', function() {
-    const worker = new PoolWorker(0, 50)
+    const worker = getWorker(0, 50)
     expect(worker.currentIndex).toBe(0)
     worker.advance(30)
     expect(worker.currentIndex).toBe(30)
+    expect(function() {
+      worker.advance('asdasd')
+    }).toThrow()
+    expect(function() {
+      worker.advance(-5)
+    }).toThrow()
     worker.advance(2)
     expect(worker.currentIndex).toBe(32)
     expect(function() {
@@ -41,8 +54,18 @@ describe('Pool Worker', function() {
     }).toThrow()
   })
 
+  it('has a working setActive method', function() {
+    const worker = getWorker(0, 50)
+    worker.setActive(null)
+    expect(worker.getActive()).toBe(false)
+    worker.setActive(1)
+    expect(worker.getActive()).toBe(true)
+    worker.setActive('asdasd')
+    expect(worker.getActive()).toBe(true)
+  })
+
   it('has a working getCompletionPercentage method', function() {
-    const worker = new PoolWorker(50, 100)
+    const worker = getWorker(50, 100)
     expect(worker.getCompletionPercentage()).toBe(0)
     worker.advance(5)
     expect(worker.getCompletionPercentage()).toBe(10)
@@ -53,7 +76,7 @@ describe('Pool Worker', function() {
   })
 
   it('has a valid getRemaining method', function() {
-    const worker = new PoolWorker(50, 100)
+    const worker = getWorker(50, 100)
     expect(worker.getRemaining()).toBe(50)
     worker.advance(10)
     expect(worker.getRemaining()).toBe(40)
@@ -64,33 +87,33 @@ describe('Pool Worker', function() {
   })
 
   it('has a valid hasCompleted method', function() {
-    const worker = new PoolWorker(50, 100)
+    const worker = getWorker(50, 100)
     expect(worker.hasCompleted()).toBe(false)
     worker.advance(50)
     expect(worker.hasCompleted()).toBe(true)
   })
 
   it('has an active state', function() {
-    const worker = new PoolWorker(50, Infinity)
-    expect(worker.isActive()).toBe(false)
-    worker.activate()
-    expect(worker.isActive()).toBe(true)
+    const worker = getWorker(50, 100)
+    expect(worker.getActive()).toBe(false)
+    worker.setActive(true)
+    expect(worker.getActive()).toBe(true)
     worker.dispose()
-    expect(worker.isActive()).toBe(false)
-    worker.activate()
-    expect(worker.isActive()).toBe(true)
+    expect(worker.getActive()).toBe(false)
+    worker.setActive(true)
+    expect(worker.getActive()).toBe(true)
     worker.dispose()
-    expect(worker.isActive()).toBe(false)
-    worker.activate()
-    expect(worker.isActive()).toBe(true)
+    expect(worker.getActive()).toBe(false)
+    worker.setActive(true)
+    expect(worker.getActive()).toBe(true)
     worker.dispose()
-    expect(worker.isActive()).toBe(false)
+    expect(worker.getActive()).toBe(false)
   })
 
   it('is serializable', function() {
-    const worker = new PoolWorker(50, 100)
+    const worker = getWorker(50, 100)
     worker.advance(10)
-    const cloneWorker = PoolWorker.unserialize(worker.serialize())
+    const cloneWorker = RangeWorker.unserialize(worker.serialize())
     expect(worker).toEqual(cloneWorker)
   })
 })

@@ -1,120 +1,102 @@
-'use strict'
-
 /* @flow */
 
 import invariant from 'assert'
-import {PoolWorker} from './worker'
-import type {PoolWorker$Serialized} from './worker'
+import RangeWorker from './worker'
 
-type RangePool$Serialized = {
-  length: number,
-  complete: boolean,
-  workers: Array<PoolWorker$Serialized>
-}
-
-export class RangePool {
+export default class RangePool {
   length: number;
-  complete: bool;
-  workers: Set<PoolWorker>;
+  workers: Set<RangeWorker>;
 
   constructor(length: number) {
     invariant(typeof length === 'number', 'length is not a number')
-    invariant(length !== Infinity, 'length can not be infinite')
+    invariant(Number.isFinite(length), 'length can not be infinite')
     invariant(length > 0, 'length must be greater than zero')
 
     this.length = length
-    this.complete = false
     this.workers = new Set()
   }
-  serialize(): RangePool$Serialized {
-    const workers = []
+  hasAliveWorker(): boolean {
     for (const worker of this.workers) {
-      workers.push(worker.serialize())
+      if (!worker.hasCompleted() && worker.getActive()) {
+        return true
+      }
     }
-    return {
-      length: this.length,
-      complete: this.complete,
-      workers: workers
-    }
+    return false
   }
-  createWorker(): PoolWorker {
-    let lazyWorker = null
-    let lazyDiff = 0
-    let lazyPercentage = 101
-    let lastWorker = null
+  getWorker(): ?RangeWorker {
+    if (this.hasCompleted()) {
+      throw new Error('Can not add a new worker on a completed pool')
+    }
+    if (!this.workers.size) {
+      const worker = new RangeWorker(0, this.length)
+      this.workers.add(worker)
+      return worker.setActive(true)
+    }
+
+    let lazy: ?RangeWorker = null
 
     for (const worker of this.workers) {
-      if (!worker.hasCompleted()) {
-        if (!worker.isActive()) {
-          return worker.activate()
-        }
-
-        const percentage = worker.getCompletionPercentage()
-        const diff = worker.getIndexLimit() - worker.getCurrentIndex()
-        lastWorker = worker
-        if (percentage < lazyPercentage) {
-          lazyWorker = worker
-          lazyPercentage = percentage
-          lazyDiff = diff
-        } else if (lazyDiff < diff) {
-          lazyWorker = worker
-          lazyPercentage = percentage
-          lazyDiff = diff
-        }
+      if (worker.hasCompleted()) {
+        continue
+      }
+      if (!worker.getActive()) {
+        return worker.setActive(true)
+      }
+      if (!lazy || worker.getCompletionPercentage() < lazy.getCompletionPercentage() || worker.getRemaining() > lazy.getRemaining()) {
+        lazy = worker
       }
     }
 
-    if (!lazyWorker) {
-      if (this.hasCompleted()) {
-        throw new Error('Can not add a new worker on a completed pool')
-      }
-      return this.registerWorker(new PoolWorker(this.getCompletedSteps(), this.length)).activate()
-    }
-
-    const workLeft = lazyWorker.getRemaining()
-    const indexForNewWorker = Math.ceil(lazyWorker.currentIndex + workLeft / 2)
-    const newWorker = new PoolWorker(indexForNewWorker, lazyWorker.limitIndex)
-    lazyWorker.limitIndex = indexForNewWorker
-    return this.registerWorker(newWorker).activate()
+    invariant(lazy, 'No lazy worker found?!')
+    const workLeft = lazy.getRemaining()
+    const indexForNewWorker = Math.ceil(lazy.currentIndex + (workLeft / 2))
+    const newWorker = new RangeWorker(indexForNewWorker, lazy.limitIndex)
+    this.workers.add(newWorker)
+    lazy.limitIndex = indexForNewWorker
+    return newWorker.setActive(true)
   }
-  hasCompleted(): boolean {
-    return this.getCompletedSteps() === this.length
-  }
-  getWorkingWorker(): ?PoolWorker {
-    for (const worker of this.workers) {
-      if (!worker.hasCompleted() && worker.isActive()) {
-        return worker
-      }
-    }
-    return null
-  }
-  hasWorkingWorker(): boolean {
-    return this.getWorkingWorker() !== null
-  }
-  getCompletedSteps(): number {
+  getCompleted(): number {
     let completedSteps = 0
     for (const worker of this.workers) {
-      completedSteps += worker.currentIndex - worker.startIndex
+      completedSteps += worker.getCompleted()
     }
     return completedSteps
   }
   getRemaining(): number {
-    return this.length - this.getCompletedSteps()
+    return this.length - this.getCompleted()
   }
-  // Private function registerWorker
-  registerWorker(worker: PoolWorker): PoolWorker {
-    this.workers.add(worker)
-    return worker
+  hasCompleted(): boolean {
+    return this.getCompleted() === this.length
+  }
+  getCompletionPercentage(): number {
+    if (!Number.isFinite(this.length)) {
+      return 0
+    }
+    return Math.round((this.getCompleted() / this.getRemaining()) * 100)
   }
   dispose() {
     this.workers.clear()
   }
-  static unserialize(serialized: RangePool$Serialized): RangePool {
-    const pool = new RangePool(serialized.length)
-    pool.complete = serialized.complete
-    for (const worker of serialized.workers) {
-      pool.workers.add(PoolWorker.unserialize(worker))
+  serialize(): string {
+    const workers = []
+    for (const worker of this.workers) {
+      workers.push(worker.serialize())
+    }
+    return JSON.stringify({
+      length: this.length,
+      workers,
+    })
+  }
+  static unserialize(serialized: string): RangePool {
+    invariant(typeof serialized === 'string', 'Serialized content must be a string')
+
+    const unserialized = JSON.parse(serialized)
+    const pool = new RangePool(unserialized.length)
+    for (let i = 0, length = unserialized.workers.length; i < length; ++i) {
+      pool.workers.add(RangeWorker.unserialize(unserialized.workers[i]))
     }
     return pool
   }
 }
+
+export { RangeWorker, RangePool }

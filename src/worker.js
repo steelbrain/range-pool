@@ -1,59 +1,43 @@
-'use strict'
-
 /* @flow */
 
 import invariant from 'assert'
+import type { SerializedWorker } from './types'
 
-export type PoolWorker$Serialized = {
-  active: boolean,
-  startIndex: number,
-  limitIndex: number,
-  currentIndex: number
-}
-
-export class PoolWorker {
+export default class RangeWorker {
   active: boolean;
   startIndex: number;
   limitIndex: number;
   currentIndex: number;
 
   constructor(startIndex: number, limitIndex: number) {
-    invariant(typeof startIndex === 'number', 'startIndex is not a number')
-    invariant(typeof limitIndex === 'number', 'limitIndex is not a number')
-    invariant(startIndex !== Infinity, 'startIndex should not be inifinite')
-    invariant(startIndex > -1, 'startIndex should be at least zero')
-    invariant(limitIndex > 0, 'limitIndex should be greater than zero')
-    invariant(limitIndex - startIndex > 0, 'startIndex and limitIndex difference should be more than zero')
+    invariant(typeof startIndex === 'number', 'startIndex must be a number')
+    invariant(typeof limitIndex === 'number', 'limitIndex must be a number')
+    invariant(Number.isFinite(startIndex), 'startIndex must be finite')
+    invariant(Number.isFinite(limitIndex), 'limitIndex must be finite')
+    invariant(startIndex > -1, 'startIndex must be at least zero')
+    invariant(limitIndex > startIndex, 'limitIndex must be greater than startIndex')
 
     this.active = false
     this.startIndex = startIndex
     this.limitIndex = limitIndex
     this.currentIndex = this.startIndex
   }
-  serialize(): PoolWorker$Serialized {
-    return {
-      active: this.active,
-      startIndex: this.startIndex,
-      limitIndex: this.limitIndex,
-      currentIndex: this.currentIndex,
-    }
-  }
-  activate(): PoolWorker {
-    this.active = true
-    return this
-  }
   advance(steps: number) {
+    invariant(typeof steps === 'number', 'steps must be a number')
+    invariant(steps > 0, 'steps must be more than zero')
+
     const remaining = this.getRemaining()
     if (steps > remaining) {
-      throw new Error('Cannot advance worker more than maximum')
+      throw new RangeError('Cannot advance worker more than maximum')
     }
     this.currentIndex += steps
   }
-  getCompletionPercentage(): number {
-    return Math.round(((this.currentIndex - this.startIndex) / (this.limitIndex - this.startIndex)) * 100)
+  setActive(active: boolean): RangeWorker {
+    this.active = !!active
+    return this
   }
-  getRemaining(): number {
-    return this.limitIndex - this.currentIndex
+  getActive(): boolean {
+    return this.active
   }
   getCurrentIndex(): number {
     return this.currentIndex
@@ -61,20 +45,34 @@ export class PoolWorker {
   getStartIndex(): number {
     return this.startIndex
   }
-  getIndexLimit(): number {
+  getLimitIndex(): number {
     return this.limitIndex
+  }
+  getRemaining(): number {
+    return this.limitIndex - this.currentIndex
+  }
+  getCompleted(): number {
+    return this.currentIndex - this.startIndex
   }
   hasCompleted(): boolean {
     return this.getRemaining() === 0
   }
-  isActive(): boolean {
-    return this.active
+  getCompletionPercentage(): number {
+    return Math.round((this.getCompleted() / (this.limitIndex - this.startIndex)) * 100)
   }
   dispose() {
     this.active = false
   }
-  static unserialize(serialized: PoolWorker$Serialized): PoolWorker {
-    const worker = new PoolWorker(serialized.startIndex, serialized.limitIndex)
+  serialize(): SerializedWorker {
+    return {
+      active: this.active,
+      startIndex: this.startIndex,
+      limitIndex: this.limitIndex,
+      currentIndex: this.currentIndex,
+    }
+  }
+  static unserialize(serialized: SerializedWorker): RangeWorker {
+    const worker = new RangeWorker(serialized.startIndex, serialized.limitIndex)
     worker.active = serialized.active
     worker.currentIndex = serialized.currentIndex
     return worker
