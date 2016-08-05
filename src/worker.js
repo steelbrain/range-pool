@@ -12,10 +12,10 @@ export default class RangeWorker {
   constructor(startIndex: number, limitIndex: number) {
     invariant(typeof startIndex === 'number', 'startIndex is not a number')
     invariant(typeof limitIndex === 'number', 'limitIndex is not a number')
-    invariant(startIndex !== Infinity, 'startIndex should not be inifinite')
-    invariant(startIndex > -1, 'startIndex should be at least zero')
-    invariant(limitIndex > 0, 'limitIndex should be greater than zero')
-    invariant((limitIndex - startIndex) > 0, 'startIndex and limitIndex difference should be more than zero')
+    invariant(Number.isFinite(startIndex), 'startIndex must be finite')
+    invariant(Number.isFinite(limitIndex), 'limitIndex must be finite')
+    invariant(startIndex > -1, 'startIndex must be at least zero')
+    invariant(limitIndex > startIndex, 'limitIndex must be greater than startIndex')
 
     this.active = false
     this.startIndex = startIndex
