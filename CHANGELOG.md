@@ -1,3 +1,7 @@
+#### 2.1.0
+
+- Add proper `Infinity` support to both `Pool` and `Worker`
+
 #### 2.0.0
 
 - Change exports signature
