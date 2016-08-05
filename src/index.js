@@ -88,16 +88,12 @@ export default class RangePool {
     return JSON.stringify({
       length: this.length,
       workers,
-    }, function(key: string, value: any) {
-      return value === Infinity ? 'Infinity' : value
     })
   }
   static unserialize(serialized: string): RangePool {
     invariant(typeof serialized === 'string', 'Serialized content must be a string')
 
-    const unserialized = JSON.parse(serialized, function(key: string, value: any) {
-      return value === 'Infinity' ? Infinity : value
-    })
+    const unserialized = JSON.parse(serialized)
     const pool = new RangePool(unserialized.length)
     for (let i = 0, length = unserialized.workers.length; i < length; ++i) {
       pool.workers.add(RangeWorker.unserialize(unserialized.workers[i]))
