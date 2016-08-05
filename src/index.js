@@ -9,7 +9,6 @@ export default class RangePool {
 
   constructor(length: number) {
     invariant(typeof length === 'number', 'length is not a number')
-    invariant(Number.isFinite(length), 'length can not be infinite')
     invariant(length > 0, 'length must be greater than zero')
 
     this.length = length
@@ -48,6 +47,10 @@ export default class RangePool {
     }
 
     invariant(lazy, 'No lazy worker found?!')
+    if (lazy.limitIndex === Infinity) {
+      throw new Error('Refusing to create more than one worker for Infinite length')
+    }
+
     const workLeft = lazy.getRemaining()
     const indexForNewWorker = Math.ceil(lazy.currentIndex + (workLeft / 2))
     const newWorker = new RangeWorker(indexForNewWorker, lazy.limitIndex)
