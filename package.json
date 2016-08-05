@@ -12,7 +12,8 @@
   "scripts": {
     "test": "apm test",
     "compile": "ucompiler go",
-    "watch": "ucompiler watch"
+    "watch": "ucompiler watch",
+    "lint": "eslint ."
   },
   "repository": {
     "type": "git",
