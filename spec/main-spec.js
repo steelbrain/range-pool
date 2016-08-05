@@ -142,7 +142,4 @@ describe('RangePool', function() {
     expect(pool.hasCompleted()).toEqual(poolClone.hasCompleted())
     expect([...pool.workers]).toEqual([...poolClone.workers])
   })
-  it('is serializable even with Infinities', function() {
-    // const pool = getRangePool(1000)
-  })
 })
