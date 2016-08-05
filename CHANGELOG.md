@@ -1,3 +1,7 @@
+#### 2.1.1
+
+- Fix a bug where unserialized workers would be assumed active
+
 #### 2.1.0
 
 - Add proper `Infinity` support to both `Pool` and `Worker`

@@ -68,7 +68,6 @@ export default class RangeWorker {
   }
   serialize(): SerializedWorker {
     return {
-      active: this.active,
       startIndex: this.startIndex,
       limitIndex: this.limitIndex,
       currentIndex: this.currentIndex,
@@ -76,7 +75,6 @@ export default class RangeWorker {
   }
   static unserialize(serialized: SerializedWorker): RangeWorker {
     const worker = new RangeWorker(serialized.startIndex, serialized.limitIndex)
-    worker.active = serialized.active
     worker.currentIndex = serialized.currentIndex
     return worker
   }
