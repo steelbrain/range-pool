@@ -10,8 +10,8 @@ export default class RangeWorker {
   currentIndex: number;
 
   constructor(startIndex: number, limitIndex: number) {
-    invariant(typeof startIndex === 'number', 'startIndex is not a number')
-    invariant(typeof limitIndex === 'number', 'limitIndex is not a number')
+    invariant(typeof startIndex === 'number', 'startIndex must be a number')
+    invariant(typeof limitIndex === 'number', 'limitIndex must be a number')
     invariant(Number.isFinite(startIndex), 'startIndex must be finite')
     invariant(Number.isFinite(limitIndex), 'limitIndex must be finite')
     invariant(startIndex > -1, 'startIndex must be at least zero')
@@ -23,6 +23,9 @@ export default class RangeWorker {
     this.currentIndex = this.startIndex
   }
   advance(steps: number) {
+    invariant(typeof steps === 'number', 'steps must be a number')
+    invariant(steps > 0, 'steps must be more than zero')
+
     const remaining = this.getRemaining()
     if (steps > remaining) {
       throw new RangeError('Cannot advance worker more than maximum')

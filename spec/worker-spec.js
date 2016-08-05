@@ -41,6 +41,12 @@ describe('Pool Worker', function() {
     expect(worker.currentIndex).toBe(0)
     worker.advance(30)
     expect(worker.currentIndex).toBe(30)
+    expect(function() {
+      worker.advance('asdasd')
+    }).toThrow()
+    expect(function() {
+      worker.advance(-5)
+    }).toThrow()
     worker.advance(2)
     expect(worker.currentIndex).toBe(32)
     expect(function() {
