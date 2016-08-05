@@ -18,6 +18,7 @@ describe('Pool Worker', function() {
       getWorker(-1)
     }).toThrow()
     getWorker(0, 1)
+    getWorker(0, Infinity)
   })
 
   it('cries if limitIndex is invalid', function() {
@@ -29,9 +30,6 @@ describe('Pool Worker', function() {
     }).toThrow()
     expect(function() {
       getWorker(5, 5)
-    }).toThrow()
-    expect(function() {
-      getWorker(0, Infinity)
     }).toThrow()
     getWorker(0, 100)
   })
@@ -115,5 +113,10 @@ describe('Pool Worker', function() {
     worker.advance(10)
     const cloneWorker = RangeWorker.unserialize(worker.serialize())
     expect(worker).toEqual(cloneWorker)
+  })
+
+  it('reports correct percentage when ends at Infinity', function() {
+    const worker = getWorker(50, Infinity)
+    expect(worker.getCompletionPercentage()).toBe(0)
   })
 })
