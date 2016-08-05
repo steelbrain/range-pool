@@ -56,7 +56,6 @@ export default class RangePool {
     return newWorker.setActive(true)
   }
   getCompleted(): number {
-    // has
     let completedSteps = 0
     for (const worker of this.workers) {
       completedSteps += worker.getCompleted()
@@ -64,11 +63,9 @@ export default class RangePool {
     return completedSteps
   }
   getRemaining(): number {
-    // has
     return this.length - this.getCompleted()
   }
   hasCompleted(): boolean {
-    // has
     return this.getCompleted() === this.length
   }
   getCompletionPercentage(): number {
