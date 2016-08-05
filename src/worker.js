@@ -48,11 +48,14 @@ export default class PoolWorker {
   getRemaining(): number {
     return this.limitIndex - this.currentIndex
   }
-  getCompletionPercentage(): number {
-    return Math.round(((this.currentIndex - this.startIndex) / (this.limitIndex - this.startIndex)) * 100)
+  getCompleted(): number {
+    return this.currentIndex - this.startIndex
   }
   hasCompleted(): boolean {
     return this.getRemaining() === 0
+  }
+  getCompletionPercentage(): number {
+    return Math.round((this.getCompleted() / this.getRemaining()) * 100)
   }
   dispose() {
     this.active = false
