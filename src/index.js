@@ -27,6 +27,11 @@ export default class RangePool {
     if (this.hasCompleted()) {
       throw new Error('Can not add a new worker on a completed pool')
     }
+    if (!this.workers.size) {
+      const worker = new PoolWorker(0, this.length)
+      this.workers.add(worker)
+      return worker.setActive(true)
+    }
 
     let lazy: ?PoolWorker = null
 
