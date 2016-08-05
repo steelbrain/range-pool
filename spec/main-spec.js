@@ -3,48 +3,48 @@
 import RangePool from '../'
 
 describe('RangePool', function() {
-  function getPoolRange(limit: number): RangePool {
+  function getRangePool(limit: number): RangePool {
     return new RangePool(limit)
   }
 
   it('cries when constructor param is inifinite', function() {
     expect(function() {
-      getPoolRange(Infinity)
+      getRangePool(Infinity)
     }).toThrow()
   })
   it('cries when constructor param is negative', function() {
     expect(function() {
-      getPoolRange(-1)
+      getRangePool(-1)
     }).toThrow()
   })
   it('accepts a number', function() {
-    const pool = getPoolRange(50)
+    const pool = getRangePool(50)
     expect(pool).toBeDefined()
   })
 
   it('can divide a workload in a lot of workers', function() {
-    const pool = getPoolRange(500)
+    const pool = getRangePool(500)
     let i = 0
     for (i = 0; i < 10; i++) {
       pool.getWorker()
     }
   })
   it('cries if we try to create a worker on a completed pool', function() {
-    const pool = getPoolRange(500)
+    const pool = getRangePool(500)
     pool.getWorker().advance(500)
     expect(function() {
       pool.getWorker()
     }).toThrow()
   })
   it('has a working hasCompleted method', function() {
-    const pool = getPoolRange(500)
+    const pool = getRangePool(500)
     const worker = pool.getWorker()
     expect(pool.hasCompleted()).toBe(false)
     worker.advance(500)
     expect(pool.hasCompleted()).toBe(true)
   })
   it('has a working getCompleted method', function() {
-    const pool = getPoolRange(500)
+    const pool = getRangePool(500)
     expect(pool.getCompleted()).toBe(0)
     const worker = pool.getWorker()
     expect(pool.getCompleted()).toBe(0)
@@ -52,7 +52,7 @@ describe('RangePool', function() {
     expect(pool.getCompleted()).toBe(50)
   })
   it('has a working getRemaining method', function() {
-    const pool = getPoolRange(500)
+    const pool = getRangePool(500)
     expect(pool.getRemaining()).toBe(500)
     const worker = pool.getWorker()
     expect(pool.getRemaining()).toBe(500)
@@ -61,7 +61,7 @@ describe('RangePool', function() {
   })
 
   it('properly distributes work among workers', function() {
-    const pool = getPoolRange(512)
+    const pool = getRangePool(512)
     const workerFirst = pool.getWorker()
     expect(pool.getCompleted()).toBe(0)
     workerFirst.advance(256)
@@ -78,7 +78,7 @@ describe('RangePool', function() {
   })
 
   it('properly distributes work among more than two workers', function() {
-    const pool = getPoolRange(1024)
+    const pool = getRangePool(1024)
     const workerFirst = pool.getWorker()
     workerFirst.advance(128)
     const workerSecond = pool.getWorker()
@@ -94,7 +94,7 @@ describe('RangePool', function() {
   })
 
   it('properly distributes work of odd length', function() {
-    const pool = getPoolRange(999)
+    const pool = getRangePool(999)
     const workerFirst = pool.getWorker()
     workerFirst.advance(50)
     const workerSecond = pool.getWorker()
@@ -104,7 +104,7 @@ describe('RangePool', function() {
   })
 
   it('re-uses old unfinished died workers even if that means one', function() {
-    const pool = getPoolRange(90)
+    const pool = getRangePool(90)
     const workerA = pool.getWorker()
     workerA.advance(50)
     workerA.dispose()
@@ -115,7 +115,7 @@ describe('RangePool', function() {
   })
 
   it('re-uses old unfinished died workers no matter how many', function() {
-    const pool = getPoolRange(50)
+    const pool = getRangePool(50)
     const workerA = pool.getWorker()
     workerA.advance(5)
     const workerB = pool.getWorker()
@@ -131,7 +131,7 @@ describe('RangePool', function() {
   })
 
   it('is serializable', function() {
-    const pool = getPoolRange(50)
+    const pool = getRangePool(50)
     const workerA = pool.getWorker()
     workerA.advance(5)
     const workerB = pool.getWorker()
@@ -143,6 +143,6 @@ describe('RangePool', function() {
     expect([...pool.workers]).toEqual([...poolClone.workers])
   })
   it('is serializable even with Infinities', function() {
-    // const pool = getPoolRange(1000)
+    // const pool = getRangePool(1000)
   })
 })

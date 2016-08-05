@@ -12,29 +12,34 @@ npm install --save range-pool
 ## API
 
 ```js
-export class RangePool {
+class RangePool {
   constructor(length: number | Infinity)
-  serialize(): Object
   getWorker(): RangeWorker
+  hasAliveWorker(): boolean
   hasCompleted(): boolean
-  getWorkingWorker(): ?RangeWorker
-  hasWorkingWorker(): boolean
   getCompleted(): boolean
-  getRemaining(): number // out of length
+  getRemaining(): number
+  getCompletionPercentage(): number
   dispose()
-  static unserialize(info: Object): RangePool
+  serialize(): string
+  static unserialize(serialized: string): RangePool
 }
 class RangeWorker {
   advance(steps: number)
   getActive(): boolean
-  getCompletionPercentage(): number
-  getRemaining(): number
+  setActive(status: boolean): this
   getCurrentIndex(): number
   getStartIndex(): number
   getLimitIndex(): number
+  getRemaining(): number
+  getCompleted(): number
   hasCompleted(): boolean
+  getCompletionPercentage(): number
   dispose()
 }
+
+export default RangePool
+export { RangePool, RangeWorker }
 ```
 
 ## Example Usage
@@ -42,7 +47,7 @@ class RangeWorker {
 ```js
 'use babel'
 
-import {RangePool} from 'range-pool'
+import RangePool from 'range-pool'
 
 const fileInfo: {
   size: number,

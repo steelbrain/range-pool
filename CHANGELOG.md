@@ -1,7 +1,16 @@
 #### 2.0.0
 
+- Change exports signature
+- Add `RangeWorker#setActive`
+- Remove `RangeWorker#activate`
+- Add `RangeWorker#getCompleted`
+- Rename `PoolWorker` to `RangeWorker`
+- Add `RangePool#getCompletionPercentage`
+- Ban `Infinity` in `RangeWorker` bounds
+- Validate `steps` value in `RangeWorker#advance`
 - Rename from `getIndexLimit` to `getLimitIndex` on Worker
-- Signature of `RangePool.serialize` changed to return string, this also fixes the Infinity deserialization bug in this library so you don't have to.
+- Remove `RangePool#getWorkingWorker` and `RangePool#hasWorkingWorker` in favor of `RangePool#hasAliveWorker`
+- Change signature of `RangePool#serialize` and `RangePool.unserialize`
 
 #### 1.1.1
 
