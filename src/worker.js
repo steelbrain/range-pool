@@ -1,17 +1,9 @@
-'use strict'
-
 /* @flow */
 
 import invariant from 'assert'
+import type { PoolWorker$Serialized } from './types'
 
-export type PoolWorker$Serialized = {
-  active: boolean,
-  startIndex: number,
-  limitIndex: number,
-  currentIndex: number
-}
-
-export class PoolWorker {
+export default class PoolWorker {
   active: boolean;
   startIndex: number;
   limitIndex: number;

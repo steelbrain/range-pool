@@ -1,18 +1,10 @@
-'use strict'
-
 /* @flow */
 
 import invariant from 'assert'
-import {PoolWorker} from './worker'
-import type {PoolWorker$Serialized} from './worker'
+import PoolWorker from './worker'
+import type { PoolWorker$Serialized, RangePool$Serialized } from './types'
 
-type RangePool$Serialized = {
-  length: number,
-  complete: boolean,
-  workers: Array<PoolWorker$Serialized>
-}
-
-export class RangePool {
+export default class RangePool {
   length: number;
   complete: bool;
   workers: Set<PoolWorker>;
@@ -34,14 +26,13 @@ export class RangePool {
     return {
       length: this.length,
       complete: this.complete,
-      workers: workers
+      workers,
     }
   }
   createWorker(): PoolWorker {
     let lazyWorker = null
     let lazyDiff = 0
     let lazyPercentage = 101
-    let lastWorker = null
 
     for (const worker of this.workers) {
       if (!worker.hasCompleted()) {
@@ -51,7 +42,6 @@ export class RangePool {
 
         const percentage = worker.getCompletionPercentage()
         const diff = worker.getIndexLimit() - worker.getCurrentIndex()
-        lastWorker = worker
         if (percentage < lazyPercentage) {
           lazyWorker = worker
           lazyPercentage = percentage
@@ -72,7 +62,7 @@ export class RangePool {
     }
 
     const workLeft = lazyWorker.getRemaining()
-    const indexForNewWorker = Math.ceil(lazyWorker.currentIndex + workLeft / 2)
+    const indexForNewWorker = Math.ceil(lazyWorker.currentIndex + (workLeft / 2))
     const newWorker = new PoolWorker(indexForNewWorker, lazyWorker.limitIndex)
     lazyWorker.limitIndex = indexForNewWorker
     return this.registerWorker(newWorker).activate()
