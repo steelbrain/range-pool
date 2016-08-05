@@ -6,28 +6,15 @@ import type { PoolWorker$Serialized, RangePool$Serialized } from './types'
 
 export default class RangePool {
   length: number;
-  complete: bool;
   workers: Set<PoolWorker>;
 
   constructor(length: number) {
     invariant(typeof length === 'number', 'length is not a number')
-    invariant(length !== Infinity, 'length can not be infinite')
+    invariant(Number.isFinite(length), 'length can not be infinite')
     invariant(length > 0, 'length must be greater than zero')
 
     this.length = length
-    this.complete = false
     this.workers = new Set()
-  }
-  serialize(): RangePool$Serialized {
-    const workers = []
-    for (const worker of this.workers) {
-      workers.push(worker.serialize())
-    }
-    return {
-      length: this.length,
-      complete: this.complete,
-      workers,
-    }
   }
   createWorker(): PoolWorker {
     let lazyWorker = null
@@ -99,11 +86,27 @@ export default class RangePool {
   dispose() {
     this.workers.clear()
   }
-  static unserialize(serialized: RangePool$Serialized): RangePool {
-    const pool = new RangePool(serialized.length)
-    pool.complete = serialized.complete
-    for (const worker of serialized.workers) {
-      pool.workers.add(PoolWorker.unserialize(worker))
+  serialize(): string {
+    const workers = []
+    for (const worker of this.workers) {
+      workers.push(worker.serialize())
+    }
+    return JSON.stringify({
+      length: this.length,
+      workers,
+    }, function(key: string, value: any) {
+      return value === Infinity ? 'Infinity' : value
+    })
+  }
+  static unserialize(serialized: string): RangePool {
+    invariant(typeof serialized === 'string', 'Serialized content must be a string')
+
+    const unserialized = JSON.parse(serialized, function(key: string, value: any) {
+      return value === 'Infinity' ? Infinity : value
+    })
+    const pool = new RangePool(unserialized.length)
+    for (let i = 0, length = unserialized.workers; i < length; ++i) {
+      pool.workers.add(PoolWorker.unserialize(unserialized.workers[i]))
     }
     return pool
   }

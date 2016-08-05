@@ -1,6 +1,7 @@
 #### 2.0.0
 
 - Rename from `getIndexLimit` to `getLimitIndex` on Worker
+- Signature of `RangePool.serialize` changed to return string, this also fixes the Infinity deserialization bug in this library so you don't have to.
 
 #### 1.1.1
 
