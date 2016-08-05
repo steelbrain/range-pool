@@ -15,11 +15,11 @@ npm install --save range-pool
 export class RangePool {
   constructor(length: number | Infinity)
   serialize(): Object
-  createWorker(): PoolWorker
+  getWorker(): PoolWorker
   hasCompleted(): boolean
   getWorkingWorker(): ?PoolWorker
   hasWorkingWorker(): boolean
-  getCompletedSteps(): boolean
+  getCompleted(): boolean
   getRemaining(): number // out of length
   dispose()
   static unserialize(info: Object): RangePool
@@ -51,7 +51,7 @@ const fileInfo: {
 const fd = getFileResource()
 
 const range = new RangePool(fileInfo.size)
-const firstWorker = range.createWorker()
+const firstWorker = range.getWorker()
 const firstConnection = Connection.create(fileInfo.url)
 
 firstConnection.on('data', function(chunk) {
@@ -59,7 +59,7 @@ firstConnection.on('data', function(chunk) {
   firstWorker.advance(chunk.length)
 })
 
-const secondWorker = range.createWorker()
+const secondWorker = range.getWorker()
 const secondConnection = Connection.create(fileInfo.url)
 
 secondConnection.on('data', function(chunk) {
