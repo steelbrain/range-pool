@@ -1,33 +1,36 @@
 'use babel'
 
-import {RangePool} from '../'
-console = require('console')
+import RangePool from '../'
 
 describe('RangePool', function() {
+  function getRange(limit: number): RangePool {
+    return new RangePool(limit)
+  }
+
   it('cries when constructor param is inifinite', function() {
     expect(function() {
-      new RangePool(Infinity)
+      getRange(Infinity)
     }).toThrow()
   })
   it('cries when constructor param is negative', function() {
     expect(function() {
-      new RangePool(-1)
+      getRange(-1)
     }).toThrow()
   })
   it('accepts a number', function() {
-    const pool = new RangePool(50)
+    const pool = getRange(50)
     expect(pool).toBeDefined()
   })
 
   it('can divide a workaround in a lot of workers', function() {
-    const pool = new RangePool(500)
-    let i =0
+    const pool = getRange(500)
+    let i = 0
     for (i = 0; i < 10; i++) {
       pool.createWorker()
     }
   })
   it('cries if we try to create a worker on a completed pool', function() {
-    const pool = new RangePool(500)
+    const pool = getRange(500)
     const worker = pool.createWorker()
     worker.advance(500)
     expect(function() {
@@ -35,14 +38,14 @@ describe('RangePool', function() {
     }).toThrow()
   })
   it('has a working hasCompleted method', function() {
-    const pool = new RangePool(500)
+    const pool = getRange(500)
     const worker = pool.createWorker()
     expect(pool.hasCompleted()).toBe(false)
     worker.advance(500)
     expect(pool.hasCompleted()).toBe(true)
   })
   it('has a working getCompletedSteps method', function() {
-    const pool = new RangePool(500)
+    const pool = getRange(500)
     expect(pool.getCompletedSteps()).toBe(0)
     const worker = pool.createWorker()
     expect(pool.getCompletedSteps()).toBe(0)
@@ -50,7 +53,7 @@ describe('RangePool', function() {
     expect(pool.getCompletedSteps()).toBe(50)
   })
   it('has a working getRemaining method', function() {
-    const pool = new RangePool(500)
+    const pool = getRange(500)
     expect(pool.getRemaining()).toBe(500)
     const worker = pool.createWorker()
     expect(pool.getRemaining()).toBe(500)
@@ -59,7 +62,7 @@ describe('RangePool', function() {
   })
 
   it('properly distributes work among workers', function() {
-    const pool = new RangePool(512)
+    const pool = getRange(512)
     const workerFirst = pool.createWorker()
     expect(pool.getCompletedSteps()).toBe(0)
     workerFirst.advance(256)
@@ -76,7 +79,7 @@ describe('RangePool', function() {
   })
 
   it('properly distributes work among more than two workers', function() {
-    const pool = new RangePool(1024)
+    const pool = getRange(1024)
     const workerFirst = pool.createWorker()
     workerFirst.advance(128)
     const workerSecond = pool.createWorker()
@@ -85,14 +88,14 @@ describe('RangePool', function() {
     expect(pool.getCompletedSteps()).toBe(228)
 
     let range = 0
-    range += workerFirst.getIndexLimit() - workerFirst.getStartIndex()
-    range += workerSecond.getIndexLimit() - workerSecond.getStartIndex()
-    range += workerThird.getIndexLimit() - workerThird.getStartIndex()
+    range += workerFirst.getLimitIndex() - workerFirst.getStartIndex()
+    range += workerSecond.getLimitIndex() - workerSecond.getStartIndex()
+    range += workerThird.getLimitIndex() - workerThird.getStartIndex()
     expect(range).toBe(1024)
   })
 
   it('properly distributes work of odd length', function() {
-    const pool = new RangePool(999)
+    const pool = getRange(999)
     const workerFirst = pool.createWorker()
     workerFirst.advance(50)
     const workerSecond = pool.createWorker()
@@ -102,34 +105,34 @@ describe('RangePool', function() {
   })
 
   it('re-uses old unfinished died workers even if that means one', function() {
-    const pool = new RangePool(90)
+    const pool = getRange(90)
     const workerA = pool.createWorker()
     workerA.advance(50)
     workerA.dispose()
-    expect(workerA.isActive()).toBe(false)
+    expect(workerA.getActive()).toBe(false)
     const workerB = pool.createWorker()
     expect(workerA).toBe(workerB)
-    expect(workerB.isActive()).toBe(true)
+    expect(workerB.getActive()).toBe(true)
   })
 
   it('re-uses old unfinished died workers no matter how many', function() {
-    const pool = new RangePool(50)
+    const pool = getRange(50)
     const workerA = pool.createWorker()
     workerA.advance(5)
     const workerB = pool.createWorker()
     workerB.advance(5)
     const workerC = pool.createWorker()
-    expect(workerC.isActive()).toBe(true)
+    expect(workerC.getActive()).toBe(true)
     workerC.dispose()
-    expect(workerC.isActive()).toBe(false)
+    expect(workerC.getActive()).toBe(false)
     const workerD = pool.createWorker()
     expect(workerD).toBe(workerC)
-    expect(workerD.isActive()).toBe(true)
-    expect(workerC.isActive()).toBe(true)
+    expect(workerD.getActive()).toBe(true)
+    expect(workerC.getActive()).toBe(true)
   })
 
   it('is serializable', function() {
-    const pool = new RangePool(50)
+    const pool = getRange(50)
     const workerA = pool.createWorker()
     workerA.advance(5)
     const workerB = pool.createWorker()

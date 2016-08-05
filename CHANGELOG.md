@@ -1,3 +1,7 @@
+#### 2.0.0
+
+- Rename from `getIndexLimit` to `getLimitIndex` on Worker
+
 #### 1.1.1
 
 - Add `getWorkingWorker` to RangePool

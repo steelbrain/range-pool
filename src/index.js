@@ -36,12 +36,12 @@ export default class RangePool {
 
     for (const worker of this.workers) {
       if (!worker.hasCompleted()) {
-        if (!worker.isActive()) {
-          return worker.activate()
+        if (!worker.getActive()) {
+          return worker.setActive(true)
         }
 
         const percentage = worker.getCompletionPercentage()
-        const diff = worker.getIndexLimit() - worker.getCurrentIndex()
+        const diff = worker.getLimitIndex() - worker.getCurrentIndex()
         if (percentage < lazyPercentage) {
           lazyWorker = worker
           lazyPercentage = percentage
@@ -58,21 +58,21 @@ export default class RangePool {
       if (this.hasCompleted()) {
         throw new Error('Can not add a new worker on a completed pool')
       }
-      return this.registerWorker(new PoolWorker(this.getCompletedSteps(), this.length)).activate()
+      return this.registerWorker(new PoolWorker(this.getCompletedSteps(), this.length)).setActive(true)
     }
 
     const workLeft = lazyWorker.getRemaining()
     const indexForNewWorker = Math.ceil(lazyWorker.currentIndex + (workLeft / 2))
     const newWorker = new PoolWorker(indexForNewWorker, lazyWorker.limitIndex)
     lazyWorker.limitIndex = indexForNewWorker
-    return this.registerWorker(newWorker).activate()
+    return this.registerWorker(newWorker).setActive(true)
   }
   hasCompleted(): boolean {
     return this.getCompletedSteps() === this.length
   }
   getWorkingWorker(): ?PoolWorker {
     for (const worker of this.workers) {
-      if (!worker.hasCompleted() && worker.isActive()) {
+      if (!worker.hasCompleted() && worker.setActive(true)) {
         return worker
       }
     }

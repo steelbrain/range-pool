@@ -26,12 +26,12 @@ export class RangePool {
 }
 class PoolWorker {
   advance(steps: number)
-  isActive(): boolean
+  getActive(): boolean
   getCompletionPercentage(): number
   getRemaining(): number
   getCurrentIndex(): number
   getStartIndex(): number
-  getIndexLimit(): number
+  getLimitIndex(): number
   hasCompleted(): boolean
   dispose()
 }

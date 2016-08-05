@@ -22,22 +22,19 @@ export default class PoolWorker {
     this.limitIndex = limitIndex
     this.currentIndex = this.startIndex
   }
-  activate(): PoolWorker {
-    this.active = true
-    return this
-  }
   advance(steps: number) {
     const remaining = this.getRemaining()
     if (steps > remaining) {
-      throw new Error('Cannot advance worker more than maximum')
+      throw new RangeError('Cannot advance worker more than maximum')
     }
     this.currentIndex += steps
   }
-  getCompletionPercentage(): number {
-    return Math.round(((this.currentIndex - this.startIndex) / (this.limitIndex - this.startIndex)) * 100)
+  setActive(active: boolean): PoolWorker {
+    this.active = !!active
+    return this
   }
-  getRemaining(): number {
-    return this.limitIndex - this.currentIndex
+  getActive(): boolean {
+    return this.active
   }
   getCurrentIndex(): number {
     return this.currentIndex
@@ -45,14 +42,17 @@ export default class PoolWorker {
   getStartIndex(): number {
     return this.startIndex
   }
-  getIndexLimit(): number {
+  getLimitIndex(): number {
     return this.limitIndex
+  }
+  getRemaining(): number {
+    return this.limitIndex - this.currentIndex
+  }
+  getCompletionPercentage(): number {
+    return Math.round(((this.currentIndex - this.startIndex) / (this.limitIndex - this.startIndex)) * 100)
   }
   hasCompleted(): boolean {
     return this.getRemaining() === 0
-  }
-  isActive(): boolean {
-    return this.active
   }
   dispose() {
     this.active = false
