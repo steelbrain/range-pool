@@ -1,7 +1,7 @@
 /* @flow */
 
 import invariant from 'assert'
-import type { PoolWorker$Serialized } from './types'
+import type { SerializedWorker } from './types'
 
 export default class PoolWorker {
   active: boolean;
@@ -57,7 +57,7 @@ export default class PoolWorker {
   dispose() {
     this.active = false
   }
-  serialize(): PoolWorker$Serialized {
+  serialize(): SerializedWorker {
     return {
       active: this.active,
       startIndex: this.startIndex,
@@ -65,7 +65,7 @@ export default class PoolWorker {
       currentIndex: this.currentIndex,
     }
   }
-  static unserialize(serialized: PoolWorker$Serialized): PoolWorker {
+  static unserialize(serialized: SerializedWorker): PoolWorker {
     const worker = new PoolWorker(serialized.startIndex, serialized.limitIndex)
     worker.active = serialized.active
     worker.currentIndex = serialized.currentIndex

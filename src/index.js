@@ -2,7 +2,6 @@
 
 import invariant from 'assert'
 import PoolWorker from './worker'
-import type { PoolWorker$Serialized, RangePool$Serialized } from './types'
 
 export default class RangePool {
   length: number;
