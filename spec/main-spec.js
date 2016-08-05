@@ -22,7 +22,7 @@ describe('RangePool', function() {
     expect(pool).toBeDefined()
   })
 
-  it('can divide a workaround in a lot of workers', function() {
+  it('can divide a workload in a lot of workers', function() {
     const pool = getRange(500)
     let i = 0
     for (i = 0; i < 10; i++) {
@@ -140,7 +140,7 @@ describe('RangePool', function() {
 
     const poolClone = RangePool.unserialize(pool.serialize())
     expect(pool.length).toEqual(poolClone.length)
-    expect(pool.complete).toEqual(poolClone.complete)
+    expect(pool.hasCompleted()).toEqual(poolClone.hasCompleted())
     expect([...pool.workers]).toEqual([...poolClone.workers])
   })
 })

@@ -104,7 +104,7 @@ export default class RangePool {
       return value === 'Infinity' ? Infinity : value
     })
     const pool = new RangePool(unserialized.length)
-    for (let i = 0, length = unserialized.workers; i < length; ++i) {
+    for (let i = 0, length = unserialized.workers.length; i < length; ++i) {
       pool.workers.add(PoolWorker.unserialize(unserialized.workers[i]))
     }
     return pool
