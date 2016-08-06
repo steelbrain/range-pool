@@ -23,6 +23,11 @@ describe('RangePool', function() {
     for (i = 0; i < 10; i++) {
       pool.getWorker()
     }
+    let total = 0
+    pool.workers.forEach(function(worker) {
+      total += worker.limitIndex - worker.startIndex
+    })
+    expect(total).toBe(500)
   })
   it('cries if we try to create a worker on a completed pool', function() {
     const pool = getRangePool(500)
@@ -150,6 +155,7 @@ describe('RangePool', function() {
     workerB.advance(5)
 
     const poolClone = RangePool.unserialize(pool.serialize())
+    poolClone.workers.forEach(worker => worker.setActive(true))
     expect(pool.length).toEqual(poolClone.length)
     expect(pool.hasCompleted()).toEqual(poolClone.hasCompleted())
     expect([...pool.workers]).toEqual([...poolClone.workers])
