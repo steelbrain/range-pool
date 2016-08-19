@@ -4,16 +4,16 @@
   "description": "A base library for creating range-based worker pools",
   "main": "lib/index.js",
   "devDependencies": {
+    "babel-cli": "^6.11.4",
     "babel-preset-steelbrain": "^4.0.0",
-    "eslint-config-steelbrain": "^1.0.4",
-    "ucompiler": "^3.2.0",
-    "ucompiler-plugin-babel": "^3.1.1"
+    "eslint-config-steelbrain": "^1.0.4"
   },
   "scripts": {
-    "test": "apm test",
-    "compile": "ucompiler go",
-    "watch": "ucompiler watch",
-    "lint": "eslint ."
+    "clean": "rm -rf lib",
+    "build": "npm run clean; babel src --out-dir lib",
+    "watch": "npm run clean; babel src --out-dir lib --watch",
+    "lint": "eslint .",
+    "test": "apm test"
   },
   "repository": {
     "type": "git",
