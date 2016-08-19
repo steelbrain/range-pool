@@ -1,3 +1,7 @@
+#### 2.1.2
+
+- Change build toolchain from `ucompiler` to `babel-cli`
+
 #### 2.1.1
 
 - Fix a bug where unserialized workers would be assumed active
