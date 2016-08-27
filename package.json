@@ -13,7 +13,7 @@
     "clean": "rm -rf lib",
     "build": "npm run clean; babel src --out-dir lib",
     "watch": "npm run clean; babel src --out-dir lib --watch",
-    "test": "(apm test) && (flow check | grep -q '0 errors') && (eslint . )"
+    "test": "(apm test) && (flow check) && (eslint . )"
   },
   "repository": {
     "type": "git",
