@@ -14,7 +14,7 @@ export default class RangeWorker {
     invariant(typeof limitIndex === 'number', 'limitIndex must be a number')
     invariant(Number.isFinite(startIndex), 'startIndex must be finite')
     invariant(startIndex > -1, 'startIndex must be at least zero')
-    invariant(limitIndex > startIndex, 'limitIndex must be greater than startIndex')
+    invariant(limitIndex > startIndex, `limitIndex must be greater than startIndex, it was ${limitIndex === startIndex ? 'equal' : 'smaller'}`)
 
     this.active = false
     this.startIndex = startIndex
