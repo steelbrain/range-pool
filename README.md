@@ -1,4 +1,6 @@
 # Range-Pool
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/steelbrain/range-pool.svg)](https://greenkeeper.io/)
 Range-Pool is a base library for creating numeric range-based worker pools. It makes offset handling in distributed numeric operations easy.
 
 For example, if you want to write a multi-connection download library that writes output from multiple requests to the same file, range-pool's index will make sure you get the correct position for each byte. Range-pool's API will also allow you to check which ranges are left so you can send http request with correct `Range` headers.
