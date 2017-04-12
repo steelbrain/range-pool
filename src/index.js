@@ -16,7 +16,7 @@ export default class RangePool {
   }
   hasAliveWorker(): boolean {
     for (const worker of this.workers) {
-      if (!worker.hasCompleted() && worker.getActive()) {
+      if (!worker.hasCompleted() && worker.getStatus()) {
         return true
       }
     }
@@ -29,20 +29,22 @@ export default class RangePool {
     if (!this.workers.size) {
       const worker = new RangeWorker(0, this.length)
       this.workers.add(worker)
-      return worker.setActive(true)
+      worker.setStatus(true)
+      return worker
     }
 
     let lazy: ?RangeWorker = null
 
-    for (const worker of this.workers) {
-      if (worker.hasCompleted()) {
+    for (const entry of this.workers) {
+      if (entry.hasCompleted()) {
         continue
       }
-      if (!worker.getActive()) {
-        return worker.setActive(true)
+      if (!entry.getStatus()) {
+        entry.setStatus(true)
+        return entry
       }
-      if (!lazy || worker.getCompletionPercentage() < lazy.getCompletionPercentage() || worker.getRemaining() > lazy.getRemaining()) {
-        lazy = worker
+      if (!lazy || entry.getRemaining() > lazy.getRemaining()) {
+        lazy = entry
       }
     }
 
@@ -51,12 +53,16 @@ export default class RangePool {
       throw new Error('Refusing to create more than one worker for Infinite length')
     }
 
-    const workLeft = lazy.getRemaining()
-    const indexForNewWorker = Math.ceil(lazy.currentIndex + (workLeft / 2))
-    const newWorker = new RangeWorker(indexForNewWorker, lazy.limitIndex)
-    this.workers.add(newWorker)
-    lazy.limitIndex = indexForNewWorker
-    return newWorker.setActive(true)
+    const lazyLimit = lazy.limitIndex
+    const lazyCurrent = lazy.currentIndex
+    const lazyWorkHalf = Math.ceil(lazyCurrent + ((lazyLimit - lazyCurrent) / 2))
+
+    lazy.limitIndex = lazyWorkHalf
+
+    const worker = new RangeWorker(lazyWorkHalf, lazyLimit)
+    this.workers.add(worker)
+    worker.setStatus(true)
+    return worker
   }
   getCompleted(): number {
     let completedSteps = 0
@@ -89,19 +95,19 @@ export default class RangePool {
       length: this.length,
       workers,
     }, function(key: string, value: any) {
-      return value === Infinity ? 'Infinity' : value
+      return value === Infinity ? '$$SB_Infinity$$' : value
     })
   }
   static unserialize(serialized: string): RangePool {
     invariant(typeof serialized === 'string', 'Serialized content must be a string')
 
     const unserialized = JSON.parse(serialized, function(key: string, value: any) {
-      return value === 'Infinity' ? Infinity : value
+      return value === '$$SB_Infinity$$' ? Infinity : value
     })
     const pool = new RangePool(unserialized.length)
-    for (let i = 0, length = unserialized.workers.length; i < length; ++i) {
-      pool.workers.add(RangeWorker.unserialize(unserialized.workers[i]))
-    }
+    unserialized.forEach(function(entry) {
+      pool.workers.add(RangeWorker.unserialize(entry))
+    })
     return pool
   }
 }

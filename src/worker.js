@@ -4,7 +4,7 @@ import invariant from 'assert'
 import type { SerializedWorker } from './types'
 
 export default class RangeWorker {
-  active: boolean;
+  status: boolean;
   startIndex: number;
   limitIndex: number;
   currentIndex: number;
@@ -16,7 +16,7 @@ export default class RangeWorker {
     invariant(startIndex > -1, 'startIndex must be at least zero')
     invariant(limitIndex > startIndex, `limitIndex must be greater than startIndex, it was ${limitIndex === startIndex ? 'equal' : 'smaller'}`)
 
-    this.active = false
+    this.status = false
     this.startIndex = startIndex
     this.limitIndex = limitIndex
     this.currentIndex = this.startIndex
@@ -31,12 +31,12 @@ export default class RangeWorker {
     }
     this.currentIndex += steps
   }
-  setActive(active: boolean): RangeWorker {
-    this.active = !!active
+  setStatus(active: boolean): RangeWorker {
+    this.status = !!active
     return this
   }
-  getActive(): boolean {
-    return this.active
+  getStatus(): boolean {
+    return this.status
   }
   getCurrentIndex(): number {
     return this.currentIndex
@@ -64,7 +64,7 @@ export default class RangeWorker {
     return Math.round((this.getCompleted() / (this.limitIndex - this.startIndex)) * 100)
   }
   dispose() {
-    this.active = false
+    this.status = false
   }
   serialize(): SerializedWorker {
     return {
