@@ -104,6 +104,7 @@ export default class RangePool {
     return JSON.stringify({
       length: this.length,
       workers,
+      metadata: this.metadata,
     }, function(key: string, value: any) {
       return value === Infinity ? '$$SB_Infinity$$' : value
     })
@@ -115,6 +116,7 @@ export default class RangePool {
       return value === '$$SB_Infinity$$' ? Infinity : value
     })
     const pool = new RangePool(unserialized.length)
+    pool.metadata = unserialized.metadata
     unserialized.workers.forEach(function(entry) {
       pool.workers.add(RangeWorker.unserialize(entry))
     })
