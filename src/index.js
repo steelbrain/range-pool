@@ -6,6 +6,7 @@ import RangeWorker from './worker'
 export default class RangePool {
   length: number;
   workers: Set<RangeWorker>;
+  metadata: Object;
 
   constructor(length: number) {
     invariant(typeof length === 'number', 'length is not a number')
@@ -13,6 +14,15 @@ export default class RangePool {
 
     this.length = length
     this.workers = new Set()
+    this.metadata = {}
+  }
+  getMetadata(): Object {
+    return Object.assign({}, this.metadata)
+  }
+  setMetadata(metadata: Object): void {
+    invariant(metadata && typeof metadata === 'object', 'metadata must be an object')
+
+    this.metadata = metadata
   }
   hasAliveWorker(): boolean {
     for (const worker of this.workers) {
@@ -94,6 +104,7 @@ export default class RangePool {
     return JSON.stringify({
       length: this.length,
       workers,
+      metadata: this.metadata,
     }, function(key: string, value: any) {
       return value === Infinity ? '$$SB_Infinity$$' : value
     })
@@ -105,6 +116,7 @@ export default class RangePool {
       return value === '$$SB_Infinity$$' ? Infinity : value
     })
     const pool = new RangePool(unserialized.length)
+    pool.metadata = unserialized.metadata
     unserialized.workers.forEach(function(entry) {
       pool.workers.add(RangeWorker.unserialize(entry))
     })

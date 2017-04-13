@@ -16,6 +16,8 @@ npm install --save range-pool
 ```js
 class RangePool {
   constructor(length: number | Infinity)
+  getMetadata(): Object
+  setMetadata(obj: Object): void
   getWorker(): RangeWorker
   hasAliveWorker(): boolean
   hasCompleted(): boolean

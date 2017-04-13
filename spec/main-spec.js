@@ -1,6 +1,6 @@
 'use babel'
 
-import RangePool from '../'
+import { RangePool } from '../src'
 
 describe('RangePool', function() {
   function getRangePool(limit: number): RangePool {
@@ -149,6 +149,8 @@ describe('RangePool', function() {
 
   it('is serializable', function() {
     const pool = getRangePool(50)
+    pool.setMetadata({ hello: 'world' })
+
     const workerA = pool.getWorker()
     workerA.advance(5)
     const workerB = pool.getWorker()
@@ -157,6 +159,7 @@ describe('RangePool', function() {
     const poolClone = RangePool.unserialize(pool.serialize())
     poolClone.workers.forEach(worker => worker.setStatus(true))
     expect(pool.length).toEqual(poolClone.length)
+    expect(pool.metadata).toEqual(poolClone.metadata)
     expect(pool.hasCompleted()).toEqual(poolClone.hasCompleted())
     expect([...pool.workers]).toEqual([...poolClone.workers])
   })
@@ -169,5 +172,18 @@ describe('RangePool', function() {
     anotherPool.workers.forEach(function(item) {
       expect(item.limitIndex).toBe(Infinity)
     })
+  })
+
+  it('has a working metadata api', function() {
+    const pool = getRangePool(Infinity)
+
+    expect(pool.getMetadata()).toEqual({})
+
+    // It doesn't return refs
+    pool.getMetadata().a = 1
+    expect(pool.getMetadata()).toEqual({})
+
+    pool.setMetadata({ hello: 'world', 1: 2 })
+    expect(pool.getMetadata()).toEqual({ hello: 'world', 1: 2 })
   })
 })
