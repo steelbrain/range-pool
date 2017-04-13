@@ -108,10 +108,10 @@ describe('RangePool', function() {
     const workerA = pool.getWorker()
     workerA.advance(50)
     workerA.dispose()
-    expect(workerA.getActive()).toBe(false)
+    expect(workerA.getStatus()).toBe(false)
     const workerB = pool.getWorker()
     expect(workerA).toBe(workerB)
-    expect(workerB.getActive()).toBe(true)
+    expect(workerB.getStatus()).toBe(true)
   })
 
   it('re-uses old unfinished died workers no matter how many', function() {
@@ -121,13 +121,13 @@ describe('RangePool', function() {
     const workerB = pool.getWorker()
     workerB.advance(5)
     const workerC = pool.getWorker()
-    expect(workerC.getActive()).toBe(true)
+    expect(workerC.getStatus()).toBe(true)
     workerC.dispose()
-    expect(workerC.getActive()).toBe(false)
+    expect(workerC.getStatus()).toBe(false)
     const workerD = pool.getWorker()
     expect(workerD).toBe(workerC)
-    expect(workerD.getActive()).toBe(true)
-    expect(workerC.getActive()).toBe(true)
+    expect(workerD.getStatus()).toBe(true)
+    expect(workerC.getStatus()).toBe(true)
   })
 
   it('throws an error if limit is infinity and we try to make more than one workers', function() {

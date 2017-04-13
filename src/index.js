@@ -105,7 +105,7 @@ export default class RangePool {
       return value === '$$SB_Infinity$$' ? Infinity : value
     })
     const pool = new RangePool(unserialized.length)
-    unserialized.forEach(function(entry) {
+    unserialized.workers.forEach(function(entry) {
       pool.workers.add(RangeWorker.unserialize(entry))
     })
     return pool

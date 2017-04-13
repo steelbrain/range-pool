@@ -119,4 +119,17 @@ describe('Pool Worker', function() {
     const worker = getWorker(50, Infinity)
     expect(worker.getCompletionPercentage()).toBe(0)
   })
+
+  it('has a working metadata api', function() {
+    const worker = getWorker(0, 100)
+
+    expect(worker.getMetadata()).toEqual({})
+
+    // It doesn't return refs
+    worker.getMetadata().a = 1
+    expect(worker.getMetadata()).toEqual({})
+
+    worker.setMetadata({ hello: 'world', 1: 2 })
+    expect(worker.getMetadata()).toEqual({ hello: 'world', 1: 2 })
+  })
 })
