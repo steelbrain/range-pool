@@ -1,7 +1,7 @@
 #### 3.0.0
 
 - **Breaking:** Rename `{get,set}Active` to `{get,set}Status`
-- Add `{get,set}Metadata` to `RangeWorker` and include it in serialized state
+- Add `{get,set}Metadata` to `RangeWorker` and `RangePool` and include it in serialized state
 
 #### 2.1.2
 
