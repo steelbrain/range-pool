@@ -28,8 +28,8 @@ class RangePool {
 }
 class RangeWorker {
   advance(steps: number)
-  getActive(): boolean
-  setActive(status: boolean): this
+  getStatus(): boolean
+  setStatus(status: boolean): this
   getCurrentIndex(): number
   getStartIndex(): number
   getLimitIndex(): number

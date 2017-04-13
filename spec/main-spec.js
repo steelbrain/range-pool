@@ -155,7 +155,7 @@ describe('RangePool', function() {
     workerB.advance(5)
 
     const poolClone = RangePool.unserialize(pool.serialize())
-    poolClone.workers.forEach(worker => worker.setActive(true))
+    poolClone.workers.forEach(worker => worker.setStatus(true))
     expect(pool.length).toEqual(poolClone.length)
     expect(pool.hasCompleted()).toEqual(poolClone.hasCompleted())
     expect([...pool.workers]).toEqual([...poolClone.workers])

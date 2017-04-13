@@ -1,6 +1,6 @@
 'use babel'
 
-import RangeWorker from '../lib/worker'
+import RangeWorker from '../src/worker'
 
 describe('Pool Worker', function() {
   function getWorker(param1: any, param2: any): RangeWorker {
@@ -52,14 +52,14 @@ describe('Pool Worker', function() {
     }).toThrow()
   })
 
-  it('has a working setActive method', function() {
+  it('has a working setStatus method', function() {
     const worker = getWorker(0, 50)
-    worker.setActive(null)
-    expect(worker.getActive()).toBe(false)
-    worker.setActive(1)
-    expect(worker.getActive()).toBe(true)
-    worker.setActive('asdasd')
-    expect(worker.getActive()).toBe(true)
+    worker.setStatus(null)
+    expect(worker.getStatus()).toBe(false)
+    worker.setStatus(1)
+    expect(worker.getStatus()).toBe(true)
+    worker.setStatus('asdasd')
+    expect(worker.getStatus()).toBe(true)
   })
 
   it('has a working getCompletionPercentage method', function() {
@@ -93,19 +93,19 @@ describe('Pool Worker', function() {
 
   it('has an active state', function() {
     const worker = getWorker(50, 100)
-    expect(worker.getActive()).toBe(false)
-    worker.setActive(true)
-    expect(worker.getActive()).toBe(true)
+    expect(worker.getStatus()).toBe(false)
+    worker.setStatus(true)
+    expect(worker.getStatus()).toBe(true)
     worker.dispose()
-    expect(worker.getActive()).toBe(false)
-    worker.setActive(true)
-    expect(worker.getActive()).toBe(true)
+    expect(worker.getStatus()).toBe(false)
+    worker.setStatus(true)
+    expect(worker.getStatus()).toBe(true)
     worker.dispose()
-    expect(worker.getActive()).toBe(false)
-    worker.setActive(true)
-    expect(worker.getActive()).toBe(true)
+    expect(worker.getStatus()).toBe(false)
+    worker.setStatus(true)
+    expect(worker.getStatus()).toBe(true)
     worker.dispose()
-    expect(worker.getActive()).toBe(false)
+    expect(worker.getStatus()).toBe(false)
   })
 
   it('is serializable', function() {
