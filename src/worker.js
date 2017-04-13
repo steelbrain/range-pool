@@ -5,6 +5,7 @@ import type { SerializedWorker } from './types'
 
 export default class RangeWorker {
   status: boolean;
+  metadata: Object;
   startIndex: number;
   limitIndex: number;
   currentIndex: number;
@@ -17,6 +18,7 @@ export default class RangeWorker {
     invariant(limitIndex > startIndex, `limitIndex must be greater than startIndex, it was ${limitIndex === startIndex ? 'equal' : 'smaller'}`)
 
     this.status = false
+    this.metadata = {}
     this.startIndex = startIndex
     this.limitIndex = limitIndex
     this.currentIndex = this.startIndex
@@ -34,6 +36,14 @@ export default class RangeWorker {
   setStatus(active: boolean): RangeWorker {
     this.status = !!active
     return this
+  }
+  getMetadata(): Object {
+    return Object.assign({}, this.metadata)
+  }
+  setMetadata(metadata: Object): void {
+    invariant(metadata && typeof metadata === 'object', 'metadata must be a valid object')
+
+    this.metadata = metadata
   }
   getStatus(): boolean {
     return this.status
