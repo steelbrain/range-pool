@@ -6,6 +6,7 @@ import RangeWorker from './worker'
 export default class RangePool {
   length: number;
   workers: Set<RangeWorker>;
+  metadata: Object;
 
   constructor(length: number) {
     invariant(typeof length === 'number', 'length is not a number')
@@ -13,6 +14,15 @@ export default class RangePool {
 
     this.length = length
     this.workers = new Set()
+    this.metadata = {}
+  }
+  getMetadata(): Object {
+    return this.metadata
+  }
+  setMetadata(metadata: Object): void {
+    invariant(metadata && typeof metadata === 'object', 'metadata must be an object')
+
+    this.metadata = metadata
   }
   hasAliveWorker(): boolean {
     for (const worker of this.workers) {
