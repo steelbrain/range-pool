@@ -28,8 +28,10 @@ class RangePool {
 }
 class RangeWorker {
   advance(steps: number)
-  getActive(): boolean
-  setActive(status: boolean): this
+  getMetadata(): Object
+  setMetadata(obj: Object): void
+  getStatus(): boolean
+  setStatus(status: boolean): this
   getCurrentIndex(): number
   getStartIndex(): number
   getLimitIndex(): number

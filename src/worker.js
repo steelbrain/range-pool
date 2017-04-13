@@ -4,7 +4,8 @@ import invariant from 'assert'
 import type { SerializedWorker } from './types'
 
 export default class RangeWorker {
-  active: boolean;
+  status: boolean;
+  metadata: Object;
   startIndex: number;
   limitIndex: number;
   currentIndex: number;
@@ -16,7 +17,8 @@ export default class RangeWorker {
     invariant(startIndex > -1, 'startIndex must be at least zero')
     invariant(limitIndex > startIndex, `limitIndex must be greater than startIndex, it was ${limitIndex === startIndex ? 'equal' : 'smaller'}`)
 
-    this.active = false
+    this.status = false
+    this.metadata = {}
     this.startIndex = startIndex
     this.limitIndex = limitIndex
     this.currentIndex = this.startIndex
@@ -31,12 +33,20 @@ export default class RangeWorker {
     }
     this.currentIndex += steps
   }
-  setActive(active: boolean): RangeWorker {
-    this.active = !!active
+  setStatus(active: boolean): RangeWorker {
+    this.status = !!active
     return this
   }
-  getActive(): boolean {
-    return this.active
+  getMetadata(): Object {
+    return Object.assign({}, this.metadata)
+  }
+  setMetadata(metadata: Object): void {
+    invariant(metadata && typeof metadata === 'object', 'metadata must be a valid object')
+
+    this.metadata = metadata
+  }
+  getStatus(): boolean {
+    return this.status
   }
   getCurrentIndex(): number {
     return this.currentIndex
@@ -64,10 +74,11 @@ export default class RangeWorker {
     return Math.round((this.getCompleted() / (this.limitIndex - this.startIndex)) * 100)
   }
   dispose() {
-    this.active = false
+    this.status = false
   }
   serialize(): SerializedWorker {
     return {
+      metadata: this.metadata,
       startIndex: this.startIndex,
       limitIndex: this.limitIndex,
       currentIndex: this.currentIndex,
@@ -76,6 +87,7 @@ export default class RangeWorker {
   static unserialize(serialized: SerializedWorker): RangeWorker {
     const worker = new RangeWorker(serialized.startIndex, serialized.limitIndex)
     worker.currentIndex = serialized.currentIndex
+    worker.metadata = serialized.metadata
     return worker
   }
 }
