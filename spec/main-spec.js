@@ -1,6 +1,6 @@
 'use babel'
 
-import RangePool from '../src'
+import { RangePool } from '../src'
 
 describe('RangePool', function() {
   function getRangePool(limit: number): RangePool {
