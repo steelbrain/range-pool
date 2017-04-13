@@ -111,6 +111,7 @@ describe('Pool Worker', function() {
   it('is serializable', function() {
     const worker = getWorker(50, 100)
     worker.advance(10)
+    worker.setMetadata({ hello: 'world' })
     const cloneWorker = RangeWorker.unserialize(worker.serialize())
     expect(worker).toEqual(cloneWorker)
   })
