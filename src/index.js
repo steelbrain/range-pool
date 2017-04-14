@@ -74,6 +74,9 @@ export default class RangePool {
     worker.setStatus(true)
     return worker
   }
+  getLength(): number {
+    return this.length
+  }
   getCompleted(): number {
     let completedSteps = 0
     for (const worker of this.workers) {
