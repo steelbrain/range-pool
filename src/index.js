@@ -20,7 +20,7 @@ export default class RangePool {
     return Object.assign({}, this.metadata)
   }
   setMetadata(metadata: Object): void {
-    invariant(metadata && typeof metadata === 'object', 'metadata must be an object')
+    invariant(metadata && typeof metadata === 'object', 'metadata must be a valid object')
 
     this.metadata = metadata
   }

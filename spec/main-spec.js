@@ -183,6 +183,13 @@ describe('RangePool', function() {
     pool.getMetadata().a = 1
     expect(pool.getMetadata()).toEqual({})
 
+    expect(function() {
+      pool.setMetadata('hello')
+    }).toThrow('metadata must be a valid object')
+    expect(function() {
+      pool.setMetadata(null)
+    }).toThrow('metadata must be a valid object')
+
     pool.setMetadata({ hello: 'world', 1: 2 })
     expect(pool.getMetadata()).toEqual({ hello: 'world', 1: 2 })
   })

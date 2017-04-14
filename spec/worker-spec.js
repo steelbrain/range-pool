@@ -126,6 +126,13 @@ describe('Pool Worker', function() {
 
     expect(worker.getMetadata()).toEqual({})
 
+    expect(function() {
+      worker.setMetadata('hello')
+    }).toThrow('metadata must be a valid object')
+    expect(function() {
+      worker.setMetadata(null)
+    }).toThrow('metadata must be a valid object')
+
     // It doesn't return refs
     worker.getMetadata().a = 1
     expect(worker.getMetadata()).toEqual({})
