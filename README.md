@@ -21,7 +21,8 @@ class RangePool {
   getWorker(): RangeWorker
   hasAliveWorker(): boolean
   hasCompleted(): boolean
-  getCompleted(): boolean
+  getCompleted(): number
+  getLength(): number
   getRemaining(): number
   getCompletionPercentage(): number
   dispose()
