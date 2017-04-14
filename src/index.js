@@ -94,7 +94,7 @@ export default class RangePool {
     if (this.length === Infinity) {
       return 0
     }
-    return Math.round((this.getCompleted() / this.getRemaining()) * 100)
+    return Math.floor((this.getCompleted() / this.getRemaining()) * 100)
   }
   dispose() {
     this.workers.clear()

@@ -71,7 +71,7 @@ export default class RangeWorker {
       return 0
     }
 
-    return Math.round((this.getCompleted() / (this.limitIndex - this.startIndex)) * 100)
+    return Math.floor((this.getCompleted() / (this.limitIndex - this.startIndex)) * 100)
   }
   dispose() {
     this.status = false
