@@ -20,7 +20,7 @@ export default class RangePool {
     return Object.assign({}, this.metadata)
   }
   setMetadata(metadata: Object): void {
-    invariant(metadata && typeof metadata === 'object', 'metadata must be an object')
+    invariant(metadata && typeof metadata === 'object', 'metadata must be a valid object')
 
     this.metadata = metadata
   }
@@ -73,6 +73,9 @@ export default class RangePool {
     this.workers.add(worker)
     worker.setStatus(true)
     return worker
+  }
+  getLength(): number {
+    return this.length
   }
   getCompleted(): number {
     let completedSteps = 0

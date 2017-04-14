@@ -1,3 +1,7 @@
+#### 3.1.0
+
+- Add `getLength()` to `RangePool`
+
 #### 3.0.0
 
 - **Breaking:** Rename `{get,set}Active` to `{get,set}Status`
