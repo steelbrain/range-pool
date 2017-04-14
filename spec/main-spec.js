@@ -186,4 +186,9 @@ describe('RangePool', function() {
     pool.setMetadata({ hello: 'world', 1: 2 })
     expect(pool.getMetadata()).toEqual({ hello: 'world', 1: 2 })
   })
+
+  it('has a working getLength()', function() {
+    expect(getRangePool(Infinity).getLength()).toBe(Infinity)
+    expect(getRangePool(9999).getLength()).toBe(9999)
+  })
 })
