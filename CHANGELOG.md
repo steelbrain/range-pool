@@ -1,3 +1,7 @@
+#### Upcoming
+
+- Use Math.floor instead of Math.round in Worker and Pool percentage (`99.9` would previously be shown as `100` now it's `99`)
+
 #### 3.1.0
 
 - Add `getLength()` to `RangePool`
